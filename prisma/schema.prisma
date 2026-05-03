@@ -1,0 +1,111 @@
+// Vibe Archive — Prisma schema
+// 인증 없음. 1인 사용 가정.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===== Reference: 수집된 링크 =====
+
+model Reference {
+  id            String    @id @default(uuid())
+  url           String    @unique
+  title         String?
+  ogImage       String?
+  ogDescription String?
+  aiSummary     String?
+  aiCategory    Category  @default(UNCLASSIFIED)
+  aiConfidence  Float?
+  status        Status    @default(UNREAD)
+  source        Source    @default(MANUAL)
+  rawAiResponse Json?
+  createdAt     DateTime  @default(now())
+  archivedAt    DateTime?
+  tags          ReferenceTag[]
+
+  @@index([status, createdAt])
+}
+
+enum Category {
+  VISUAL
+  DEV
+  REFERENCE
+  UNCLASSIFIED
+}
+
+enum Status {
+  UNREAD
+  ARCHIVED
+}
+
+enum Source {
+  MANUAL
+  TELEGRAM
+}
+
+// ===== Tags =====
+
+model Tag {
+  id   String         @id @default(uuid())
+  name String         @unique
+  refs ReferenceTag[]
+}
+
+model ReferenceTag {
+  referenceId String
+  tagId       String
+  reference   Reference @relation(fields: [referenceId], references: [id], onDelete: Cascade)
+  tag         Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([referenceId, tagId])
+}
+
+// ===== Visual Dictionary: 감성 키워드 ↔ AI 프롬프트 =====
+
+model VisualDictionary {
+  id              String   @id @default(uuid())
+  keyword         String
+  vibeDescription String?
+  prompts         Prompt[]
+  createdAt       DateTime @default(now())
+}
+
+model Prompt {
+  id              String           @id @default(uuid())
+  dictionaryId    String
+  tool            Tool
+  body            String
+  exampleImageUrl String?
+  dictionary      VisualDictionary @relation(fields: [dictionaryId], references: [id], onDelete: Cascade)
+}
+
+enum Tool {
+  MIDJOURNEY
+  THREEJS
+  DALLE
+  STABLE_DIFFUSION
+  OTHER
+}
+
+// ===== Dev Terminal: Git / Claude Code / Shell 명령어 =====
+
+model DevCommand {
+  id          String      @id @default(uuid())
+  category    DevCategory
+  title       String
+  body        String
+  description String?
+  createdAt   DateTime    @default(now())
+}
+
+enum DevCategory {
+  GIT
+  CLAUDE_CODE
+  SHELL
+  TERM
+}

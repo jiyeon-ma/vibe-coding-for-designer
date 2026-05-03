@@ -351,55 +351,32 @@ export const springSoft = {
 
 ---
 
-### Step 2. shadcn/ui + 디자인 토큰 셋업 (60분)
+### Step 2. shadcn/ui + 디자인 토큰 셋업 (60분) ✅
 
-**목적**: 디자인 시스템(다크 모노크롬 + 라벤더)을 CSS 변수와 Tailwind 설정에 모두 깔아두기. 이후 모든 컴포넌트는 토큰만 참조.
+**목적**: 디자인 시스템(다크 모노크롬 + 라벤더)을 CSS 변수와 Tailwind 설정에 모두 깔아두기.
 
 **작업**
-- [ ] **다크 모드 강제**: `app/layout.tsx`의 `<html>`에 `className="dark"` 추가, 라이트 모드 CSS는 작성 안 함
-- [ ] **Geist 폰트 설치**: `pnpm add geist`, `app/layout.tsx`에서 `GeistSans`, `GeistMono` 적용
-- [ ] **CSS 변수 등록**: `app/globals.css`의 `:root`에 §디자인 시스템 컬러 토큰 전체 붙여넣기
-- [ ] **Tailwind config**: `tailwind.config.ts`에서 `colors`, `fontFamily`, `borderRadius`, `letterSpacing` 토큰 매핑
-  ```ts
-  // 예시
-  colors: {
-    canvas: "var(--canvas)",
-    "surface-1": "var(--surface-1)",
-    "surface-2": "var(--surface-2)",
-    hairline: "var(--hairline)",
-    ink: { DEFAULT: "var(--ink)", muted: "var(--ink-muted)", subtle: "var(--ink-subtle)" },
-    primary: { DEFAULT: "var(--primary)", hover: "var(--primary-hover)", focus: "var(--primary-focus)" },
-  }
-  ```
-- [ ] `pnpm dlx shadcn@latest init`
-  - Style: **Default**
-  - Base color: **Neutral**
-  - CSS variables: **Yes**
-  - 이후 `app/globals.css`의 shadcn 변수(`--background`, `--foreground`, `--primary` 등)를 우리 토큰에 매핑:
-    ```css
-    --background: var(--canvas);
-    --foreground: var(--ink);
-    --card: var(--surface-1);
-    --card-foreground: var(--ink);
-    --primary: var(--primary);
-    --primary-foreground: #ffffff;
-    --border: var(--hairline);
-    --input: var(--surface-1);
-    --ring: var(--primary-focus);
-    --radius: 0.5rem;  /* 8px = radius-md */
-    ```
-- [ ] 컴포넌트 설치: `pnpm dlx shadcn@latest add button card input dialog sheet sonner badge dropdown-menu`
-- [ ] `pnpm add framer-motion lucide-react`
-- [ ] **모션 토큰 파일** 작성 — `lib/motion.ts`에 §모션 가이드의 `ease`, `duration`, `springSoft` 그대로 export
-- [ ] `app/layout.tsx`에 `<Toaster theme="dark" />` 추가
-- [ ] `app/page.tsx`에 임시 Button + Card 하나씩 두고 다크 톤·hover 모션 확인
+- [x] 다크 모드 강제: `app/layout.tsx` `<html className="dark ...">`
+- [x] Geist 폰트 (이미 `next/font/google`로 깔림)
+- [x] DESIGN.md 컬러·radius 토큰 → `app/globals.css` `:root` + `@theme inline`
+- [x] **Tailwind 4**: `tailwind.config.ts` 없음. `globals.css`의 `@theme inline`이 동등 역할
+- [x] `pnpm dlx shadcn@latest init -d` (Next + base-nova preset, lucide-react 자동 설치)
+- [x] shadcn 변수(`--background`, `--card`, `--primary`, `--border` 등)를 우리 디자인 토큰에 매핑
+- [x] 컴포넌트 추가: `card`, `input`, `dialog`, `sheet`, `sonner`, `badge`, `dropdown-menu` (+ 기본 `button`)
+- [x] `pnpm add framer-motion`
+- [x] `lib/motion.ts` — `ease`, `duration`, `springSoft`, `fadeUp`, `hoverLift`, `modalIn`, `swipeOut` export
+- [x] `app/layout.tsx`에 `<Toaster theme="dark" position="bottom-center" />` 추가
+- [x] `app/page.tsx`에 디자인 토큰 미리보기 (surface ladder, 카테고리 카드, 버튼·인풋, 모노 코드)
 
-**파일**: `app/layout.tsx`, `app/globals.css`, `tailwind.config.ts`, `lib/motion.ts`, `lib/utils.ts`, `components/ui/*`
+**파일**: `app/layout.tsx`, `app/globals.css`, `lib/motion.ts`, `lib/utils.ts`, `components.json`, `components/ui/*`
 
-**완료 기준**:
-- 페이지 배경이 거의 검정(#010102) + Geist 폰트로 보임
-- Button hover 시 배경이 라벤더(`--primary-hover`)로 부드럽게 전환
-- Card는 surface-1 배경 + 1px hairline border
+> 💡 **Tailwind 4 변화**: `tailwind.config.ts` 파일 없이 CSS-only 설정. 모든 토큰은 `globals.css`의 `@theme inline {}`에 정의.
+> 💡 **pnpm 11 빌드 우회**: `pnpm config set dangerously-allow-all-builds true` 적용으로 sharp/unrs-resolver/msw 등 빌드 자동 승인.
+
+**완료 기준**: ✅
+- 배경 #010102, Geist 폰트, 라벤더 액센트 정상 렌더
+- HTTP 200 + 컴파일 에러 0
+- 모든 디자인 토큰 클래스(`bg-surface-1`, `text-ink`, `text-brand` 등) 작동
 
 **→ 다음**: Step 3
 
