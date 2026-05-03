@@ -328,19 +328,24 @@ export const springSoft = {
 
 ---
 
-### Step 1. Next.js 프로젝트 생성 (30분)
+### Step 1. Next.js 프로젝트 생성 (30분) ✅
 
 **목적**: 모든 화면·서버 코드가 들어갈 빈 작업장.
 
 **작업**
-- [ ] `pnpm create next-app@latest vibe-archive` (TS ✅, Tailwind ✅, App Router ✅, src ❌)
-- [ ] `cd vibe-archive && pnpm dev`로 [localhost:3000](http://localhost:3000) 확인
-- [ ] `app/page.tsx`를 비우고 `<h1>Vibe Archive</h1>`만 남기기
-- [ ] git init + 초기 커밋
+- [x] `pnpm create next-app@latest .` (TS ✅, Tailwind ✅, App Router ✅, src ❌, Turbopack ✅)
+- [x] dev 서버 → [localhost:3000](http://localhost:3000) HTTP 200 확인
+- [x] `app/page.tsx`를 비우고 `<h1>Vibe Archive</h1>`만 남기기
+- [x] `.gitignore`에 `.claude/` 추가
+- [x] 초기 커밋
 
-**파일**: `app/page.tsx`, `package.json`
+**실제 설치 버전**: Next.js 16.2.4, React 19.2.4, Tailwind 4.2.4, TypeScript 5.9.3 (Turbopack)
 
-**완료 기준**: 브라우저에 "Vibe Archive" 글자만 보임
+**파일**: `app/page.tsx`, `package.json`, `.gitignore`, `pnpm-workspace.yaml`
+
+> ⚠️ **pnpm 11 strict 이슈**: `pnpm dev`가 sharp/unrs-resolver의 ignored-builds 경고로 exit 1로 종료됨. 우회: `./node_modules/.bin/next dev` 직접 호출 (현재 백그라운드 실행 중).
+
+**완료 기준**: ✅ HTTP 200, "Vibe Archive" 렌더 확인
 
 **→ 다음**: Step 2
 
