@@ -49,14 +49,14 @@ export function ArchiveList({
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
+      <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
         <div className="flex-1 min-w-0">
           <TagFilter tags={allTags} active={activeTag} onChange={setActiveTag} />
         </div>
         <CategoryManager />
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-12">
         {categories.map((cat) => {
           const colItems = filtered.filter((r) => r.category?.id === cat.id);
           // 미분류(category null) 카드들은 unclassified 컬럼에 합류
@@ -96,12 +96,12 @@ function CategorySection({
 }) {
   return (
     <section>
-      <header className="flex items-center justify-between mb-3 pb-2 border-b border-hairline">
-        <div className="flex items-baseline gap-2">
-          <h3 className="text-[15px] font-medium tracking-[-0.1px] text-ink">
+      <header className="flex items-center justify-between mb-5 pb-3 border-b border-hairline">
+        <div className="flex items-baseline gap-3">
+          <h3 className="text-[20px] font-semibold tracking-[-0.3px] text-ink">
             {category.label}
           </h3>
-          <span className="text-[12px] text-ink-tertiary tabular-nums">
+          <span className="text-[13px] text-ink-tertiary tabular-nums">
             {items.length}
           </span>
         </div>
@@ -110,10 +110,10 @@ function CategorySection({
         )}
       </header>
 
-      <div className="rounded-[10px] overflow-hidden bg-surface-1/40 border border-hairline">
+      <div className="rounded-[12px] overflow-hidden bg-surface-1/40 border border-hairline">
         {items.length === 0 ? (
-          <div className="px-4 py-6 text-center">
-            <p className="text-[12px] text-ink-tertiary">
+          <div className="px-6 py-10 text-center">
+            <p className="text-[13px] text-ink-tertiary">
               이 카테고리에 보관된 자료가 아직 없어요.
             </p>
           </div>

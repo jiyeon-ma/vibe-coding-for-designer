@@ -47,8 +47,8 @@ export function CategoryManager() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center h-8 px-2.5 rounded-md text-[12px] font-medium bg-surface-1 border border-hairline text-ink-muted hover:text-ink hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50">
-        <Plus className="w-3.5 h-3.5 mr-1" />
+      <DialogTrigger className="inline-flex items-center h-9 px-3.5 rounded-md text-[13px] font-medium bg-surface-1 border border-hairline text-ink-muted hover:text-ink hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50">
+        <Plus className="w-3.5 h-3.5 mr-1.5" />
         카테고리 추가
       </DialogTrigger>
       <DialogContent className="bg-surface-2 border-hairline-strong text-ink sm:max-w-[400px]">

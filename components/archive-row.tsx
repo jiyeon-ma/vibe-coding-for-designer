@@ -112,7 +112,7 @@ export function ArchiveRow({
         transition: { duration: duration.medium, ease: ease.out },
       }}
       transition={{ delay: Math.min(index, 12) * 0.02, duration: duration.base, ease: ease.out }}
-      className={`group relative flex items-center gap-4 px-3 py-3 border-b border-hairline last:border-b-0 hover:bg-surface-2/60 transition-colors duration-150 ${
+      className={`group relative flex items-center gap-5 px-5 py-5 border-b border-hairline last:border-b-0 hover:bg-surface-2/60 transition-colors duration-150 ${
         isPending ? "opacity-50 pointer-events-none" : ""
       }`}
     >
@@ -121,7 +121,7 @@ export function ArchiveRow({
         href={data.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 size-[60px] rounded-md overflow-hidden border border-hairline bg-canvas relative"
+        className="shrink-0 size-[72px] rounded-lg overflow-hidden border border-hairline bg-canvas relative"
       >
         {data.ogImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -133,7 +133,7 @@ export function ArchiveRow({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-[9px] tracking-[0.4px] text-ink-tertiary">
+            <span className="text-[10px] tracking-[0.4px] text-ink-tertiary">
               NO IMG
             </span>
           </div>
@@ -148,15 +148,15 @@ export function ArchiveRow({
           rel="noopener noreferrer"
           className="block"
         >
-          <h4 className="text-[14px] font-medium tracking-[-0.05px] text-ink leading-[1.35] truncate">
+          <h4 className="text-[17px] font-semibold tracking-[-0.1px] text-ink leading-[1.35] truncate mb-1">
             {data.title ?? data.url}
           </h4>
-          <p className="text-[12px] text-ink-subtle leading-[1.4] truncate mt-0.5">
+          <p className="text-[13px] text-ink-subtle leading-[1.45] truncate">
             {data.aiSummary ?? host}
           </p>
         </a>
         {data.tags.length > 0 && (
-          <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1.5">
+          <div className="flex flex-wrap gap-x-2.5 gap-y-1 mt-2">
             {data.tags.slice(0, 5).map(({ tag }) => (
               <span
                 key={tag.name}
@@ -170,7 +170,7 @@ export function ArchiveRow({
       </div>
 
       {/* Host */}
-      <span className="hidden md:inline-block shrink-0 text-[11px] text-ink-tertiary truncate max-w-[140px]">
+      <span className="hidden md:inline-block shrink-0 text-[12px] text-ink-tertiary truncate max-w-[160px]">
         {host}
       </span>
 
@@ -179,7 +179,7 @@ export function ArchiveRow({
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label="카드 메뉴"
-            className="size-7 rounded-md flex items-center justify-center text-ink-tertiary hover:text-ink hover:bg-surface-3 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50"
+            className="size-8 rounded-md flex items-center justify-center text-ink-tertiary hover:text-ink hover:bg-surface-3 transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50"
           >
             <MoreHorizontal className="w-4 h-4" />
           </DropdownMenuTrigger>

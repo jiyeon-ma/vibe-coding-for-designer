@@ -67,16 +67,16 @@ export default async function Home() {
   }));
 
   return (
-    <main className="min-h-screen px-6 md:px-10 max-w-6xl mx-auto">
+    <main className="min-h-screen px-8 md:px-16 max-w-6xl mx-auto">
       {/* Hero */}
-      <section className="pt-12 md:pt-20 pb-10 md:pb-12">
-        <p className="text-[13px] font-medium tracking-[0.4px] text-ink-subtle mb-4 uppercase">
+      <section className="pt-16 md:pt-28 pb-12 md:pb-16">
+        <p className="text-[13px] font-medium tracking-[0.4px] text-ink-subtle mb-5 uppercase">
           Vibe Archive
         </p>
-        <h1 className="text-[40px] md:text-[56px] font-semibold leading-[1.10] tracking-[-1.4px] md:tracking-[-1.8px] text-ink mb-3">
+        <h1 className="text-[48px] md:text-[64px] font-semibold leading-[1.05] tracking-[-1.6px] md:tracking-[-2.0px] text-ink mb-5">
           제2의 뇌
         </h1>
-        <p className="text-[16px] md:text-[18px] leading-[1.5] tracking-[-0.05px] text-ink-muted max-w-xl mb-8">
+        <p className="text-[17px] md:text-[19px] leading-[1.55] tracking-[-0.05px] text-ink-muted max-w-xl mb-12">
           링크를 던지면 AI가 요약·분류·태깅해서 보관해줍니다.
         </p>
         <div className="max-w-2xl">
@@ -141,11 +141,11 @@ export default async function Home() {
             meta={`${archivedAll.length}개의 보관 자료`}
           >
             {archivedAll.length === 0 ? (
-              <div className="border border-dashed border-hairline rounded-[12px] py-20 px-6 text-center">
-                <p className="text-[16px] text-ink-subtle leading-[1.5]">
+              <div className="border border-dashed border-hairline rounded-[16px] py-24 px-8 text-center">
+                <p className="text-[18px] text-ink-subtle leading-[1.5]">
                   보관한 레퍼런스가 없어요.
                 </p>
-                <p className="text-[14px] text-ink-tertiary mt-1">
+                <p className="text-[15px] text-ink-tertiary mt-2">
                   Vibe Fresh 카드를 보관하면 여기로 모입니다.
                 </p>
               </div>
@@ -174,12 +174,12 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-[88px] py-12 md:py-16">
-      <div className="flex items-baseline justify-between mb-6">
-        <h2 className="text-[22px] font-medium tracking-[-0.4px] text-ink">
+    <section id={id} className="scroll-mt-[88px] py-16 md:py-24">
+      <div className="flex items-baseline justify-between mb-10">
+        <h2 className="text-[28px] md:text-[32px] font-semibold tracking-[-0.7px] text-ink leading-[1.15]">
           {title}
         </h2>
-        <span className="text-[13px] text-ink-subtle">{meta}</span>
+        <span className="text-[13px] text-ink-subtle shrink-0 ml-4">{meta}</span>
       </div>
       {children}
     </section>
@@ -189,8 +189,8 @@ function Section({
 
 function Placeholder({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border border-dashed border-hairline rounded-[12px] py-10 px-6">
-      <p className="text-[14px] text-ink-subtle leading-[1.6] max-w-md">
+    <div className="border border-dashed border-hairline rounded-[16px] py-14 px-8">
+      <p className="text-[15px] text-ink-subtle leading-[1.65] max-w-md">
         {children}
       </p>
     </div>

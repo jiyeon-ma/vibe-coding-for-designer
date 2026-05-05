@@ -546,3 +546,58 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 - Light mode is not documented because the marketing site does not ship a light theme.
 - Linear's actual product UI uses a richer color-tag palette (red, orange, yellow, green, blue, purple) for issue priorities and project labels — those colors live in the in-product surfaces shown in mockups.
 - The custom display, text, and mono families are proprietary; an open-source substitute is acceptable.
+
+## Application Cadence (Vibe Archive)
+
+Linear의 frontmatter는 *마케팅 페이지* 스펙이라 정보 밀도가 높고 컴팩트하다. Vibe Archive는 **콘텐츠 갤러리 애플리케이션**이라 같은 색·라운드·hairline은 그대로 따르되, **타이틀은 더 굵게·크게 강조**하고 **여백은 한 단계씩 늘려** 카드가 호흡할 공간을 둔다. 마케팅의 "감탄"이 아니라 사용의 "오래 머물러도 피로하지 않은 조용함"을 노린다.
+
+### 적용 원칙
+
+1. **타이틀은 위계가 분명하게.** 섹션 H2를 카드 타이틀과 충분히 차이 두어, 어느 영역에 진입했는지 한눈에 들어오게 한다.
+2. **여백은 Linear의 1.25~1.5배.** 마케팅 페이지의 컴팩트한 리듬보다 한 단계 더 시원하게.
+3. **본문 텍스트는 항상 line-height 1.5+, body-sm 이상.** 카드 안에서 길게 읽힐 일이 적더라도 답답하지 않도록.
+4. **카드 간 gap은 16px → 20px**로. 그리드의 시각적 호흡.
+5. **카드 라운드는 12px(`{rounded.lg}`) 유지**, 큰 컨테이너는 16px(`{rounded.xl}`).
+
+### Typography Application
+
+| 레이어 | 기존 token | 적용 사이즈 / weight | 비고 |
+|---|---|---|---|
+| Hero H1 | `display-lg` (56) | **48 / 600 (모바일) → 64 / 600 (데스크톱)**, tracking -1.6/-2.0px | 페이지 진입 영역. Linear의 80px만큼 크지 않게. |
+| Hero tagline | `body-lg` (18) | **17 / 400 → 19 / 400**, tracking -0.05px, max-w-xl | 한 줄 요약. mb-12로 입력창 공기. |
+| Section H2 | `card-title` (22) | **28 / 600 (모바일) → 32 / 600 (데스크톱)**, tracking -0.7px | 섹션 진입의 핵심 강조. card-title보다 한 단계 위. |
+| Card title (Inbox / Archive) | `card-title` (22) | **18 / 600**, tracking -0.2px, line-clamp-2 | 카드 안의 메인 정보. medium보다 굵게. |
+| Archive row title | `body-sm` (14) | **17 / 600**, tracking -0.1px, truncate | 리스트뷰의 메인 정보, 한 줄. |
+| Dictionary keyword | `subhead` (20) | **24 / 600**, tracking -0.4px | 사전 카드의 주인공. |
+| Card description | `body` (16) | **14 / 400**, line-height 1.55, line-clamp-2 | 보조 정보. 너무 두드러지지 않게. |
+| Tag chip | `caption` (12) | **11 / 400**, ink-tertiary | 카드 하단의 메타. |
+| Tab pill (top) | `button` (14) | **15 / 600**, tracking -0.05px | 사용자가 매번 누를 인터랙션. semibold로 또렷이. |
+| Tab pill (sub) | `button` (14) | **13 / 500**, with hairline border | 한 단계 보조. |
+| Empty state | `body` (16) | **17~18 / 400** + 보조 15 / ink-tertiary | 빈 영역도 답답하지 않게. |
+
+### Spacing Application
+
+| 영역 | 적용 값 | 비고 |
+|---|---|---|
+| Page horizontal padding | `px-8 md:px-16` (32 / 64) | Linear 마케팅의 24/40 대신 한 단계 시원 |
+| Page max-width | 1152px (`max-w-6xl`) | 콘텐츠 그리드 3-up 유지 |
+| Hero top | `pt-16 md:pt-28` (64 / 112) | 페이지 진입의 여유 |
+| Hero h1 → tagline | `mb-5` (20) | 헤드라인과 부제 사이 |
+| Hero tagline → 입력 | `mb-12` (48) | 본문과 액션 영역 분리 |
+| Section vertical | `py-16 md:py-24` (64 / 96) | 섹션 간 명확한 호흡 |
+| Section header → content | `mb-10` (40) | 타이틀 강조 |
+| Card padding | `p-6` (24) — 콘텐츠 카드 / `p-7` (28) — 사전 카드 | Linear의 24px 유지하되 사전류 카드는 28 |
+| Card grid gap | `gap-5` (20) | 16 → 20으로 호흡 추가 |
+| Archive row vertical | `py-5` (20) | 60 → 72 썸네일과 균형 |
+| Archive row horizontal | `px-5` (20) | 카드 row 양 끝 여백 |
+| Archive thumbnail | 72×72 (`size-[72px]`) | 60 → 72로 한 단계 |
+| Empty state padding | `py-24 px-8` (96 / 32) — 메인 / `py-14 px-8` — 인라인 | 빈 영역도 충분히 |
+| Tab nav vertical | `pt-4 pb-3` (16 / 12) | sticky bar는 컴팩트 유지 |
+
+### Cadence를 유지하기 위한 규칙
+
+- **카드 안에 카드를 넣지 않는다** — 중첩은 surface ladder 한 단계까지만.
+- **타이틀에 line-clamp**를 걸어 카드 높이가 흔들리지 않게. 그리드 정렬이 깨지면 시원함이 무너진다.
+- **Hairline은 강조용**. 카드 모든 내부 영역을 hairline으로 분할하지 말 것 — 호흡이 끊긴다.
+- **1280px 이상 화면에서도 max-w-6xl 유지.** 라인 길이가 60~75자를 넘지 않게.
+- **모바일에서는 카드 padding을 줄이지 않는다** (`p-6` 유지). 작은 화면일수록 카드 내부의 위계가 더 중요해진다.

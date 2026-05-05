@@ -38,9 +38,9 @@ export function InboxGrid({
 
   if (initial.length === 0) {
     return (
-      <div className="border border-dashed border-hairline rounded-[12px] py-20 px-6 text-center">
-        <p className="text-[16px] text-ink-subtle leading-[1.5]">{emptyTitle}</p>
-        <p className="text-[14px] text-ink-tertiary mt-1">{emptyHint}</p>
+      <div className="border border-dashed border-hairline rounded-[16px] py-24 px-8 text-center">
+        <p className="text-[18px] text-ink-subtle leading-[1.5]">{emptyTitle}</p>
+        <p className="text-[15px] text-ink-tertiary mt-2">{emptyHint}</p>
       </div>
     );
   }
@@ -52,13 +52,13 @@ export function InboxGrid({
       )}
 
       {filtered.length === 0 ? (
-        <div className="border border-dashed border-hairline rounded-[12px] py-12 px-6 text-center">
-          <p className="text-[14px] text-ink-subtle">
+        <div className="border border-dashed border-hairline rounded-[16px] py-14 px-8 text-center">
+          <p className="text-[15px] text-ink-subtle">
             {`#${activeTag}`} 태그가 달린 카드가 없어요.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <AnimatePresence mode="popLayout">
             {filtered.map((ref, i) => (
               <InboxCard

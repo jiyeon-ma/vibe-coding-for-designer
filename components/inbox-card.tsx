@@ -269,12 +269,12 @@ export function InboxCard({
           </div>
         )}
 
-        <div className="p-5">
+        <div className="p-6">
           {/* Meta row */}
-          <div className="flex items-center gap-2 mb-2.5">
+          <div className="flex items-center gap-2 mb-3">
             <Badge
               variant="secondary"
-              className={`bg-surface-2 ${categoryTextColor(currentSlug)} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-2 py-0.5`}
+              className={`bg-surface-2 ${categoryTextColor(currentSlug)} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-2.5 py-0.5`}
             >
               {currentLabel}
             </Badge>
@@ -285,25 +285,25 @@ export function InboxCard({
           </div>
 
           {/* Title */}
-          <h3 className="text-[16px] font-medium tracking-[-0.05px] text-ink leading-[1.35] mb-2 line-clamp-2">
+          <h3 className="text-[18px] font-semibold tracking-[-0.2px] text-ink leading-[1.35] mb-3 line-clamp-2">
             {data.title ?? data.url}
           </h3>
 
           {/* Summary or skeleton */}
           {isClassifying ? (
-            <div className="space-y-1.5">
-              <div className="h-[12px] bg-surface-2 rounded animate-pulse w-full" />
-              <div className="h-[12px] bg-surface-2 rounded animate-pulse w-2/3" />
+            <div className="space-y-2">
+              <div className="h-[13px] bg-surface-2 rounded animate-pulse w-full" />
+              <div className="h-[13px] bg-surface-2 rounded animate-pulse w-2/3" />
             </div>
           ) : (
-            <p className="text-[14px] text-ink-subtle leading-[1.5] line-clamp-2">
+            <p className="text-[14px] text-ink-subtle leading-[1.55] line-clamp-2">
               {data.aiSummary}
             </p>
           )}
 
           {/* Tags */}
           {data.tags.length > 0 && (
-            <div className="flex flex-wrap gap-x-2 gap-y-1 mt-3">
+            <div className="flex flex-wrap gap-x-2.5 gap-y-1 mt-4">
               {data.tags.map(({ tag }) => (
                 <span
                   key={tag.name}

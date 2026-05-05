@@ -83,8 +83,8 @@ export function DevDictionaryForm({
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {mode === "create" && !isControlled && (
-        <DialogTrigger className="inline-flex items-center h-9 px-3 rounded-md text-[14px] font-medium bg-surface-1 border border-hairline text-ink hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50">
-          <Plus className="w-4 h-4 mr-1" />
+        <DialogTrigger className="inline-flex items-center h-10 px-4 rounded-md text-[14px] font-semibold bg-surface-1 border border-hairline text-ink hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50">
+          <Plus className="w-4 h-4 mr-1.5" />
           새 용어 추가
         </DialogTrigger>
       )}

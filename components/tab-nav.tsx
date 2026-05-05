@@ -17,10 +17,10 @@ export function TabNav() {
   return (
     <nav
       aria-label="섹션 필터"
-      className="sticky top-0 z-30 -mx-6 md:-mx-10 px-6 md:px-10 pt-3 bg-canvas/80 backdrop-blur-md border-b border-hairline"
+      className="sticky top-0 z-30 -mx-8 md:-mx-16 px-8 md:px-16 pt-4 bg-canvas/85 backdrop-blur-md border-b border-hairline"
     >
       {/* Top tabs */}
-      <ul className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-2.5">
+      <ul className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-3">
         {TABS_META.TOP.map((tab) => (
           <li key={tab.id} className="shrink-0">
             <Pill
@@ -43,7 +43,7 @@ export function TabNav() {
             transition={{ duration: duration.base, ease: ease.out }}
             className="overflow-hidden"
           >
-            <ul className="flex items-center gap-1 overflow-x-auto scrollbar-none pb-2.5">
+            <ul className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-3">
               <li className="shrink-0">
                 <SubPill
                   label={top === "dictionary" ? "전체" : "전체"}
@@ -81,7 +81,7 @@ function Pill({
     <button
       type="button"
       onClick={onClick}
-      className={`px-3.5 py-1.5 rounded-full text-[14px] font-medium tracking-[0] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 ${
+      className={`px-4 py-2 rounded-full text-[15px] font-semibold tracking-[-0.05px] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 ${
         active
           ? "bg-surface-2 text-ink"
           : "bg-transparent text-ink-subtle hover:text-ink-muted"
@@ -105,7 +105,7 @@ function SubPill({
     <button
       type="button"
       onClick={onClick}
-      className={`px-3 py-1 rounded-full text-[12px] font-medium tracking-[0] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 ${
+      className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium tracking-[0] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 ${
         active
           ? "bg-surface-2 text-ink border border-hairline-strong"
           : "bg-transparent text-ink-subtle border border-hairline hover:text-ink-muted hover:border-hairline-strong"
