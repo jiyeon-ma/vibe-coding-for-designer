@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { UrlSubmit } from "@/components/url-submit";
 import { InboxGrid } from "@/components/inbox-grid";
 import { TabNav } from "@/components/tab-nav";
+import { FilteredSection } from "@/components/filtered-section";
 import type { InboxCardData, CategoryOption } from "@/components/inbox-card";
 
 export const dynamic = "force-dynamic";
@@ -99,74 +101,86 @@ export default async function Home() {
         </div>
       </section>
 
-      <TabNav />
+      <Suspense fallback={null}>
+        <TabNav />
+      </Suspense>
 
-      {/* Vibe Fresh */}
-      <Section
-        id="inbox"
-        title="Vibe Fresh"
-        meta={`${inbox.length}개의 미확인 링크`}
-      >
-        <InboxGrid initial={inbox.map(toCardData)} categories={categories} />
-      </Section>
+      <Suspense fallback={null}>
+        {/* Vibe Fresh */}
+        <FilteredSection id="inbox">
+          <Section
+            id="inbox"
+            title="Vibe Fresh"
+            meta={`${inbox.length}개의 미확인 링크`}
+          >
+            <InboxGrid initial={inbox.map(toCardData)} categories={categories} />
+          </Section>
+        </FilteredSection>
 
-      {/* Visual Dictionary */}
-      <Section
-        id="visual"
-        title="Visual Dictionary"
-        meta="감성 키워드 ↔ AI 프롬프트"
-      >
-        <Placeholder>
-          곧 키워드·프롬프트 등록 기능이 추가됩니다. 그동안 보관한 시각 레퍼런스를
-          아래에서 태그별로 살펴보세요.
-        </Placeholder>
-        <SubSectionTitle
-          title="보관한 레퍼런스"
-          count={archivedVisual.length}
-        />
-        <InboxGrid
-          initial={archivedVisual.map(toCardData)}
-          categories={categories}
-          showTagFilter
-          emptyTitle="보관한 시각 레퍼런스가 없어요."
-          emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-        />
-      </Section>
+        {/* Visual Dictionary */}
+        <FilteredSection id="visual">
+          <Section
+            id="visual"
+            title="Visual Dictionary"
+            meta="감성 키워드 ↔ AI 프롬프트"
+          >
+            <Placeholder>
+              곧 키워드·프롬프트 등록 기능이 추가됩니다. 그동안 보관한 시각 레퍼런스를
+              아래에서 태그별로 살펴보세요.
+            </Placeholder>
+            <SubSectionTitle
+              title="보관한 레퍼런스"
+              count={archivedVisual.length}
+            />
+            <InboxGrid
+              initial={archivedVisual.map(toCardData)}
+              categories={categories}
+              showTagFilter
+              emptyTitle="보관한 시각 레퍼런스가 없어요."
+              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
+            />
+          </Section>
+        </FilteredSection>
 
-      {/* Dev Dictionary */}
-      <Section
-        id="dev"
-        title="Dev Dictionary"
-        meta="용어 · 개념 사전"
-      >
-        <Placeholder>
-          곧 용어·개념 등록 기능이 추가됩니다. 그동안 보관한 개발 자료를 아래에서
-          태그별로 살펴보세요.
-        </Placeholder>
-        <SubSectionTitle title="보관한 자료" count={archivedDev.length} />
-        <InboxGrid
-          initial={archivedDev.map(toCardData)}
-          categories={categories}
-          showTagFilter
-          emptyTitle="보관한 개발 자료가 없어요."
-          emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-        />
-      </Section>
+        {/* Dev Dictionary */}
+        <FilteredSection id="dev">
+          <Section
+            id="dev"
+            title="Dev Dictionary"
+            meta="용어 · 개념 사전"
+          >
+            <Placeholder>
+              곧 용어·개념 등록 기능이 추가됩니다. 그동안 보관한 개발 자료를 아래에서
+              태그별로 살펴보세요.
+            </Placeholder>
+            <SubSectionTitle title="보관한 자료" count={archivedDev.length} />
+            <InboxGrid
+              initial={archivedDev.map(toCardData)}
+              categories={categories}
+              showTagFilter
+              emptyTitle="보관한 개발 자료가 없어요."
+              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
+            />
+          </Section>
+        </FilteredSection>
 
-      {/* Vibe Archived (Reference Hub로 사용 중. R6에서 카테고리 보드로 교체 예정) */}
-      <Section
-        id="reference"
-        title="Vibe Archived"
-        meta={`${archivedReference.length}개의 보관 자료`}
-      >
-        <InboxGrid
-          initial={archivedReference.map(toCardData)}
-          categories={categories}
-          showTagFilter
-          emptyTitle="보관한 레퍼런스가 없어요."
-          emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-        />
-      </Section>
+        {/* Vibe Archived (R6에서 카테고리 보드로 교체 예정) */}
+        <FilteredSection id="reference">
+          <Section
+            id="reference"
+            title="Vibe Archived"
+            meta={`${archivedReference.length}개의 보관 자료`}
+          >
+            <InboxGrid
+              initial={archivedReference.map(toCardData)}
+              categories={categories}
+              showTagFilter
+              emptyTitle="보관한 레퍼런스가 없어요."
+              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
+            />
+          </Section>
+        </FilteredSection>
+      </Suspense>
     </main>
   );
 }
