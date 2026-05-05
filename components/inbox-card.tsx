@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -151,10 +150,6 @@ export function InboxCard({
             className="bg-surface-2 border-hairline-strong text-ink min-w-[180px]"
             onClick={(e) => e.stopPropagation()}
           >
-            <DropdownMenuLabel className="text-ink-subtle text-[12px] tracking-[0.4px] font-medium uppercase">
-              카드 액션
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-hairline" />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="text-ink hover:bg-surface-3 focus:bg-surface-3">
                 카테고리 변경
@@ -163,7 +158,7 @@ export function InboxCard({
                 {CATEGORIES.map((c) => (
                   <DropdownMenuItem
                     key={c.value}
-                    onSelect={() => handleCategoryChange(c.value)}
+                    onClick={() => handleCategoryChange(c.value)}
                     className="hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
                   >
                     {category === c.value && <Check className="w-3 h-3 mr-2" />}
@@ -175,14 +170,14 @@ export function InboxCard({
             </DropdownMenuSub>
             <DropdownMenuSeparator className="bg-hairline" />
             <DropdownMenuItem
-              onSelect={handleArchive}
+              onClick={handleArchive}
               className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
             >
               <Archive className="w-3.5 h-3.5 mr-2" />
               보관
             </DropdownMenuItem>
             <DropdownMenuItem
-              onSelect={handleDelete}
+              onClick={handleDelete}
               className="text-ink-muted hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5 mr-2" />

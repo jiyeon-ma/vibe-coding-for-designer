@@ -523,14 +523,14 @@ export async function collectUrl(rawUrl: string, source: "MANUAL" | "TELEGRAM") 
 
 ---
 
-### Step 8. Gemini 분류 함수 (45분)
+### Step 8. Gemini 분류 함수 (45분) ✅
 
 **목적**: 이 앱의 핵심 — Gemini Flash로 한 줄 요약 + 카테고리 + 태그 자동 생성.
 
 **작업**
-- [ ] `pnpm add @google/genai`
-- [ ] `.env.local`에 `GEMINI_API_KEY` 추가
-- [ ] `lib/ai/classify.ts` 작성
+- [x] `pnpm add @google/genai` (1.51.0)
+- [x] `.env`에 `GEMINI_API_KEY` 추가
+- [x] `lib/ai/classify.ts` 작성 — gemini-2.5-flash + responseSchema + 안전장치(slice/clamp)
 
 ```ts
 // lib/ai/classify.ts
@@ -574,26 +574,22 @@ export async function classify(input: {
 }
 ```
 
-**파일**: `lib/ai/classify.ts`, `.env.local`
+**파일**: `lib/ai/classify.ts`, `.env`
 
-**완료 기준**: 임시 스크립트로 dribbble.com URL → `{ summary, category: "VISUAL", tags, confidence }` 반환
+**완료 기준**: ✅ github URL → `{ category: "DEV", confidence: 1.0, tags: ['typescript','개발','ai','api','sdk'], summary: "Anthropic의 안전 우선..." }`
 
 **→ 다음**: Step 9
 
 ---
 
-### Step 9. 분류 백그라운드 연결 (45분)
+### Step 9. 분류 백그라운드 연결 (45분) ✅
 
 **목적**: URL 제출 후 즉시 응답 + 백그라운드에서 AI 분류 → DB 업데이트.
 
 **작업**
-- [ ] `lib/collect.ts`에서 INSERT 직후 `after()`로 분류 작업 등록
-- [ ] `import { after } from "next/server"`
-- [ ] `after()` 콜백:
-  - `classify(...)` 호출
-  - 성공: `db.reference.update({ aiSummary, aiCategory, aiConfidence, rawAiResponse })`
-  - 태그 connectOrCreate
-  - **catch 블록은 `console.error`만, 자동 재시도 절대 금지**
+- [x] `lib/collect.ts`에서 INSERT 직후 `after()`로 분류 작업 등록
+- [x] `after()` 콜백 — classify → DB UPDATE + 태그 connectOrCreate
+- [x] catch 블록 `console.error`만 — 자동 재시도 절대 금지
 
 ```ts
 // lib/collect.ts (분류 추가 부분)
@@ -624,46 +620,44 @@ after(async () => {
 
 **파일**: `lib/collect.ts`
 
-**완료 기준**: URL 제출 1~3초 후 페이지 refresh 시 카드의 요약·카테고리·태그가 채워짐
+**완료 기준**: ✅ URL 제출 후 2~3초면 카드의 요약·카테고리·태그가 자동으로 채워짐
 
 **→ 다음**: Step 10
 
 ---
 
-### Step 10. 카드 메뉴: 카테고리 직접 변경 (30분)
+### Step 10. 카드 메뉴: 카테고리 직접 변경 (30분) ✅
 
 **목적**: AI가 잘못 분류했을 때 사용자가 즉시 보정. (재시도·심층 분석은 MVP에서 제외)
 
 **작업**
-- [ ] `app/api/references/[id]/route.ts` 생성
-- [ ] PATCH: body에서 `aiCategory` 또는 `status` 받아 update
-- [ ] 카드 우상단 "..." DropdownMenu
-  - 카테고리 변경 (4개 옵션)
-  - Archive (다음 단계)
-  - Delete (다음 단계)
+- [x] `app/api/references/[id]/route.ts` 생성 (PATCH + DELETE)
+- [x] PATCH: body에서 `aiCategory`(enum 검증) 또는 `status` 받아 update
+- [x] 카드 우상단 "..." DropdownMenu — 카테고리 sub-menu(현재 선택에 Check 표시) + 보관 + 삭제
+- [x] Optimistic update — 클릭 즉시 카테고리 라벨 변경, 실패 시 rollback + toast
 
 **파일**: `app/api/references/[id]/route.ts`, `components/inbox-card.tsx`
 
-**완료 기준**: 카드 메뉴에서 카테고리를 DEV로 바꾸면 즉시 반영됨
+**완료 기준**: ✅ PATCH HTTP 200, optimistic UI 즉시 반영, refresh 후에도 유지
 
 **→ 다음**: Step 11
 
 ---
 
-### Step 11. Archive / Delete 액션 (30분)
+### Step 11. Archive / Delete 액션 (30분) ✅
 
 **목적**: Inbox에서 카드를 정리하는 두 방법.
 
 **작업**
-- [ ] PATCH `/api/references/[id]` — `status: "ARCHIVED"` + `archivedAt: now()`
-- [ ] DELETE `/api/references/[id]` — hard delete
-- [ ] 카드 메뉴에 Archive / Delete 추가
-- [ ] Framer Motion `AnimatePresence` + `exit={{ x: 300, opacity: 0 }}`
-- [ ] Archive 시 토스트 "{카테고리} 탭에 보관했어요"
+- [x] PATCH `/api/references/[id]` — `status: "ARCHIVED"` + `archivedAt: now()` 자동
+- [x] DELETE `/api/references/[id]` — hard delete
+- [x] 카드 메뉴에 Archive / Delete 추가 (lucide 아이콘 + 한국어 라벨)
+- [x] `components/inbox-grid.tsx` 분리 → `AnimatePresence mode="popLayout"` + 카드 exit `{ opacity: 0, scale: 0.96 }`
+- [x] Archive 시 토스트 "{카테고리} 탭에 보관했어요"
 
-**파일**: `app/api/references/[id]/route.ts`, `components/inbox-card.tsx`
+**파일**: `app/api/references/[id]/route.ts`, `components/inbox-card.tsx`, `components/inbox-grid.tsx`
 
-**완료 기준**: Archive → 카드 슬라이드 사라짐, Delete → 즉시 사라짐
+**완료 기준**: ✅ Archive 시 archivedAt 채워지고 inbox에서 사라짐, Delete 시 row 삭제
 
 **→ 다음**: Step 12
 
