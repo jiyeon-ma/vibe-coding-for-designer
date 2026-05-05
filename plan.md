@@ -663,22 +663,21 @@ after(async () => {
 
 ---
 
-### Step 12. 탭 네비 + 4섹션 (45분)
+### Step 12. 탭 네비 + 4섹션 (45분) ✅
 
 **목적**: 메인 페이지에 [전체][Visual Dictionary][Dev Terminal][Reference Hub] 탭과 4개 앵커 섹션.
 
 **작업**
-- [ ] `components/tab-nav.tsx` — sticky 상단, 클릭 시 `scrollIntoView({ behavior: "smooth" })`
-- [ ] 앵커: `#inbox`, `#visual`, `#dev`, `#reference`
-- [ ] `app/page.tsx`를 4섹션 레이아웃으로
-  - `#inbox` UNREAD 카드 그리드
-  - `#visual` placeholder
-  - `#dev` placeholder
-  - `#reference` `status=ARCHIVED && aiCategory=REFERENCE` 그리드
+- [x] `components/tab-nav.tsx` — sticky top-0, pill-style (DESIGN.md), backdrop-blur
+- [x] 클릭 시 `scrollIntoView({ behavior: "smooth", block: "start" })` + `scroll-mt-[88px]`
+- [x] **IntersectionObserver**로 스크롤 시 가장 많이 보이는 섹션을 자동 active 처리
+- [x] 클릭 직후 800ms간 IntersectionObserver lock — smooth scroll이 끝나기 전 깜빡임 방지
+- [x] `app/page.tsx`를 4섹션 + Section/Placeholder helper로 재구성
+- [x] Reference Hub: `status=ARCHIVED && aiCategory=REFERENCE` 카드 그리드 (Promise.all로 inbox와 병렬 조회)
 
 **파일**: `components/tab-nav.tsx`, `app/page.tsx`
 
-**완료 기준**: 탭 클릭 시 부드럽게 해당 섹션으로 스크롤, Reference Hub에 archived REFERENCE 표시
+**완료 기준**: ✅ 탭 클릭 시 부드러운 스크롤, 스크롤에 따라 active 탭 자동 갱신, archived REFERENCE 카드 정상 렌더
 
 **→ 다음**: Step 13
 

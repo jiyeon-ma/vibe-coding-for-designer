@@ -3,7 +3,14 @@
 import { useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ExternalLink, MoreHorizontal, Archive, Trash2, Check } from "lucide-react";
+import {
+  ExternalLink,
+  MoreHorizontal,
+  Archive,
+  ArchiveRestore,
+  Trash2,
+  Check,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -17,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { duration, ease } from "@/lib/motion";
-import type { Category } from "@/lib/generated/prisma/enums";
+import type { Category, Status } from "@/lib/generated/prisma/enums";
 
 export type InboxCardData = {
   id: string;
@@ -27,6 +34,7 @@ export type InboxCardData = {
   ogDescription: string | null;
   aiSummary: string | null;
   aiCategory: Category;
+  status: Status;
   tags: { tag: { name: string } }[];
 };
 
@@ -42,6 +50,13 @@ const categoryLabel: Record<Category, string> = {
   DEV: "Dev",
   REFERENCE: "Reference",
   UNCLASSIFIED: "분류 중",
+};
+
+const archiveDestination: Record<Category, string> = {
+  VISUAL: "Visual Dictionary",
+  DEV: "Dev Terminal",
+  REFERENCE: "Reference Hub",
+  UNCLASSIFIED: "Reference Hub",
 };
 
 const categoryTextColor: Record<Category, string> = {
@@ -82,11 +97,28 @@ export function InboxCard({
         body: JSON.stringify({ status: "ARCHIVED" }),
       });
       if (res.ok) {
-        toast.success(`${categoryLabel[category]} 탭에 보관했어요`);
+        toast.success(`${archiveDestination[category]}에 보관했어요`);
         onRemove?.(data.id);
         router.refresh();
       } else {
         toast.error("보관 실패");
+      }
+    });
+  };
+
+  const handleUnarchive = () => {
+    startTransition(async () => {
+      const res = await fetch(`/api/references/${data.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "UNREAD" }),
+      });
+      if (res.ok) {
+        toast.success("Smart Inbox로 복귀했어요");
+        onRemove?.(data.id);
+        router.refresh();
+      } else {
+        toast.error("복귀 실패");
       }
     });
   };
@@ -169,13 +201,23 @@ export function InboxCard({
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator className="bg-hairline" />
-            <DropdownMenuItem
-              onClick={handleArchive}
-              className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
-            >
-              <Archive className="w-3.5 h-3.5 mr-2" />
-              보관
-            </DropdownMenuItem>
+            {data.status === "UNREAD" ? (
+              <DropdownMenuItem
+                onClick={handleArchive}
+                className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
+              >
+                <Archive className="w-3.5 h-3.5 mr-2" />
+                보관
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                onClick={handleUnarchive}
+                className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
+              >
+                <ArchiveRestore className="w-3.5 h-3.5 mr-2" />
+                Inbox로 복귀
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem
               onClick={handleDelete}
               className="text-ink-muted hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
