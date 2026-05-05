@@ -5,7 +5,7 @@ import { InboxGrid } from "@/components/inbox-grid";
 import { TabNav } from "@/components/tab-nav";
 import { FilteredSection } from "@/components/filtered-section";
 import { DevDictionaryGrid } from "@/components/dev-dictionary-grid";
-import { CategoryBoard } from "@/components/category-board";
+import { ArchiveList } from "@/components/archive-list";
 import type { InboxCardData, CategoryOption } from "@/components/inbox-card";
 
 export const dynamic = "force-dynamic";
@@ -150,7 +150,7 @@ export default async function Home() {
                 </p>
               </div>
             ) : (
-              <CategoryBoard
+              <ArchiveList
                 initial={archivedAll.map(toCardData)}
                 categories={categories}
               />
@@ -186,16 +186,6 @@ function Section({
   );
 }
 
-function SubSectionTitle({ title, count }: { title: string; count: number }) {
-  return (
-    <div className="flex items-baseline justify-between mt-10 mb-4">
-      <h3 className="text-[16px] font-medium tracking-[-0.05px] text-ink">
-        {title}
-      </h3>
-      <span className="text-[12px] text-ink-tertiary">{count}개</span>
-    </div>
-  );
-}
 
 function Placeholder({ children }: { children: React.ReactNode }) {
   return (
