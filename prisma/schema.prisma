@@ -10,6 +10,18 @@ datasource db {
   provider = "postgresql"
 }
 
+// ===== Category: 기본 4개 + 사용자 추가 =====
+
+model Category {
+  id         String      @id @default(uuid())
+  slug       String      @unique             // visual / dev / reference / unclassified / kebab-case 사용자 정의
+  label      String                          // 표시명
+  isSystem   Boolean     @default(false)     // 기본 4개는 true (삭제·slug 변경 불가)
+  order      Int         @default(0)         // Vibe Archived 컬럼 순서
+  createdAt  DateTime    @default(now())
+  references Reference[]
+}
+
 // ===== Reference: 수집된 링크 =====
 
 model Reference {
@@ -19,7 +31,9 @@ model Reference {
   ogImage       String?
   ogDescription String?
   aiSummary     String?
-  aiCategory    Category  @default(UNCLASSIFIED)
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  aiSlug        String?                       // AI가 처음 분류한 slug 기록 (디버그용)
   aiConfidence  Float?
   status        Status    @default(UNREAD)
   source        Source    @default(MANUAL)
@@ -28,14 +42,7 @@ model Reference {
   archivedAt    DateTime?
   tags          ReferenceTag[]
 
-  @@index([status, createdAt])
-}
-
-enum Category {
-  VISUAL
-  DEV
-  REFERENCE
-  UNCLASSIFIED
+  @@index([status, categoryId, createdAt])
 }
 
 enum Status {
@@ -92,20 +99,12 @@ enum Tool {
   OTHER
 }
 
-// ===== Dev Terminal: Git / Claude Code / Shell 명령어 =====
+// ===== Dev Dictionary: 용어 · 개념 사전 =====
 
-model DevCommand {
-  id          String      @id @default(uuid())
-  category    DevCategory
-  title       String
-  body        String
-  description String?
-  createdAt   DateTime    @default(now())
-}
-
-enum DevCategory {
-  GIT
-  CLAUDE_CODE
-  SHELL
-  TERM
+model DevDictionary {
+  id          String   @id @default(uuid())
+  keyword     String                          // "rebase", "tool use", "API"
+  description String                          // 한 줄 설명
+  example     String?                         // 예시 코드/명령어 (mono code block)
+  createdAt   DateTime @default(now())
 }
