@@ -55,8 +55,9 @@ export async function collectUrl(rawUrl: string, source: Source): Promise<Collec
         where: { id: ref.id },
         data: {
           aiSummary: result.summary,
-          aiCategory: result.category,
+          aiSlug: result.categorySlug,
           aiConfidence: result.confidence,
+          category: { connect: { slug: result.categorySlug } },
           rawAiResponse: { ...result, model: "gemini-2.5-flash" },
           tags: {
             create: result.tags.map((name) => ({

@@ -47,6 +47,9 @@
 | 외부 수집 채널 | Telegram Bot (Part B) | 카톡 직결은 약관/안정성 이슈로 포기 |
 | **디자인 시스템** | **Linear-style 다크 모노크롬** | DESIGN.md 기반, 라이트 모드 없음 |
 | **모션** | **부드럽고 고급스럽게** (out-expo, 절제) | 통통 튀는 spring 금지 |
+| **페이지 구조** | **단일 페이지 + 클라이언트 필터** | 라우트 분리 X. 탭 클릭 = 섹션 visibility 토글 |
+| **카테고리 모델** | 기본 4개 + 사용자 추가 | enum 제거 → `Category` 모델 (`isSystem` 플래그) |
+| **D&D** | Vibe Archived 한정 | `@dnd-kit`. 카테고리 컬럼 간 카드 이동 |
 
 ---
 
@@ -76,6 +79,16 @@
 ```prisma
 // prisma/schema.prisma — 인증 없음, 1인 사용 가정
 
+model Category {                                 // 기본 4개 + 사용자 추가
+  id         String      @id @default(uuid())
+  slug       String      @unique                 // visual / dev / reference / unclassified / 사용자 정의 (kebab-case)
+  label      String                              // 표시명 ("Visual", "Animation" 등)
+  isSystem   Boolean     @default(false)         // 기본 4개는 true (삭제·slug 변경 불가)
+  order      Int         @default(0)             // Vibe Archived 컬럼 순서
+  createdAt  DateTime    @default(now())
+  references Reference[]
+}
+
 model Reference {
   id            String   @id @default(uuid())
   url           String   @unique
@@ -83,21 +96,22 @@ model Reference {
   ogImage       String?
   ogDescription String?
   aiSummary     String?
-  aiCategory    Category @default(UNCLASSIFIED)
-  aiConfidence  Float?                        // 컬럼은 두되, MVP UI에는 노출 안 함
+  categoryId    String?                          // FK → Category. AI가 분류 또는 사용자 D&D로 변경
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  aiSlug        String?                          // AI가 처음 분류한 원본 slug 기록 (디버그용)
+  aiConfidence  Float?
   status        Status   @default(UNREAD)
   source        Source   @default(MANUAL)
-  rawAiResponse Json?                         // 디버깅용
+  rawAiResponse Json?                            // 디버깅용
   createdAt     DateTime @default(now())
   archivedAt    DateTime?
   tags          ReferenceTag[]
 
-  @@index([status, createdAt])
+  @@index([status, categoryId, createdAt])
 }
 
-enum Category { VISUAL DEV REFERENCE UNCLASSIFIED }
-enum Status   { UNREAD ARCHIVED }
-enum Source   { MANUAL TELEGRAM }              // MVP 두 채널만
+enum Status { UNREAD ARCHIVED }
+enum Source { MANUAL TELEGRAM }                  // MVP 두 채널만
 
 model Tag           { id String @id @default(uuid()); name String @unique; refs ReferenceTag[] }
 model ReferenceTag  {
@@ -110,7 +124,7 @@ model ReferenceTag  {
 
 model VisualDictionary {
   id              String   @id @default(uuid())
-  keyword         String                       // "유리 모피즘"
+  keyword         String                         // "유리 모피즘"
   vibeDescription String?
   prompts         Prompt[]
   createdAt       DateTime @default(now())
@@ -119,7 +133,7 @@ model VisualDictionary {
 model Prompt {
   id              String @id @default(uuid())
   dictionaryId    String
-  tool            Tool                         // MIDJOURNEY | THREEJS | DALLE | SD | OTHER
+  tool            Tool                           // MIDJOURNEY | THREEJS | DALLE | SD | OTHER
   body            String @db.Text
   exampleImageUrl String?
   dictionary      VisualDictionary @relation(fields: [dictionaryId], references: [id], onDelete: Cascade)
@@ -127,33 +141,48 @@ model Prompt {
 
 enum Tool { MIDJOURNEY THREEJS DALLE STABLE_DIFFUSION OTHER }
 
-model DevCommand {
-  id          String      @id @default(uuid())
-  category    DevCategory                      // GIT | CLAUDE_CODE | SHELL | TERM
-  title       String
-  body        String      @db.Text
-  description String?
-  createdAt   DateTime    @default(now())
+model DevDictionary {                            // 용어·개념 사전 (Visual Dictionary와 같은 패턴)
+  id          String   @id @default(uuid())
+  keyword     String                             // "rebase", "tool use", "API"
+  description String                             // 한 줄 설명
+  example     String?                            // 예시 코드/명령어 (mono code block)
+  createdAt   DateTime @default(now())
 }
-
-enum DevCategory { GIT CLAUDE_CODE SHELL TERM }
 ```
 
 ---
 
 ## 🖼️ 화면 구조
 
-단일 페이지 + 앵커 네비게이션 (`/` 외 라우트 없음).
+**단일 페이지 + 클라이언트 필터** (`/` 외 라우트 없음). 탭 클릭 시 라우트 이동·스크롤이 아니라 섹션 visibility 토글.
 
 ```
 /
-├─ 상단 고정: 통합 검색바
-├─ 탭: [전체] [Visual Dictionary] [Dev Terminal] [Reference Hub]
-├─ #inbox      Smart Inbox (UNREAD 카드, 최신순)
-├─ #visual     Visual Dictionary
-├─ #dev        Dev Terminal
-└─ #reference  Archived REFERENCE
+├─ Hero (제목 + URL 입력 + 통합 검색바)
+├─ 상위 탭 sticky:    [All] [Vibe Dictionary] [Vibe Reference]
+├─ 하위 탭 (조건부):
+│    상위 = Dictionary  → [Visual Dictionary] [Dev Dictionary]
+│    상위 = Reference   → [Vibe Fresh] [Vibe Archived]
+└─ 4개 섹션 (선택된 필터에 따라 visibility 토글):
+    - Visual Dictionary    (등록된 키워드 ↔ AI 프롬프트 사전)
+    - Dev Dictionary       (등록된 용어 ↔ 설명 + 예시)
+    - Vibe Fresh           (UNREAD 카드 그리드)
+    - Vibe Archived        (카테고리 컬럼 + 태그 필터 + 카드 D&D)
 ```
+
+**필터 규칙**
+
+| 상위 | 하위 | 노출 섹션 |
+|---|---|---|
+| All | — | Visual Dict / Dev Dict / Fresh / Archived 4개 모두 |
+| Vibe Dictionary | (없음) | Visual Dict + Dev Dict |
+| Vibe Dictionary | Visual | Visual Dict 만 |
+| Vibe Dictionary | Dev | Dev Dict 만 |
+| Vibe Reference | (없음) | Fresh + Archived |
+| Vibe Reference | Fresh | Fresh 만 |
+| Vibe Reference | Archived | Archived 만 |
+
+상태는 `useSearchParams`로 URL `?tab=...&sub=...`에 보존 → 새로고침·공유에 강함.
 
 ---
 
@@ -663,7 +692,7 @@ after(async () => {
 
 ---
 
-### Step 12. 탭 네비 + 4섹션 (45분) ✅
+### Step 12. 탭 네비 + 4섹션 (45분) ✅ → ⚠️ R2에서 재작업됨
 
 **목적**: 메인 페이지에 [전체][Visual Dictionary][Dev Terminal][Reference Hub] 탭과 4개 앵커 섹션.
 
@@ -679,7 +708,140 @@ after(async () => {
 
 **완료 기준**: ✅ 탭 클릭 시 부드러운 스크롤, 스크롤에 따라 active 탭 자동 갱신, archived REFERENCE 카드 정상 렌더
 
-**→ 다음**: Step 13
+> ⚠️ **이 단계의 앵커 스크롤 방식은 Step R2에서 클라이언트 필터 방식으로 재설계됩니다.**
+> 사용자 결정에 따라 탭 클릭이 *스크롤*이 아닌 *섹션 visibility 토글*로 변경됨. R 시리즈가 끝나면 IntersectionObserver/scrollIntoView 코드는 제거됩니다.
+
+**→ 다음**: Step R1 (재설계 시리즈 시작)
+
+---
+
+# 🔁 재설계 시리즈 (Step R1~R6)
+
+> Context: 단일 페이지 + 앵커 스크롤 → **단일 페이지 + 클라이언트 필터**.
+> 동시에 카테고리를 동적 모델로 이전, Dev Terminal → Dev Dictionary 의미 변경, Vibe Archived에 D&D 추가.
+> 자세한 배경과 결정 사항은 `~/.claude/plans/concurrent-wishing-seal.md` 참고.
+
+### Step R1. Category 모델 마이그레이션 + 시드 (60분)
+
+**목적**: `Category` enum을 동적 모델로 이전. 기본 4개를 시드하고 사용자 추가를 가능하게.
+
+**작업**
+- [ ] `prisma/schema.prisma` 갱신
+  - `Category` 모델 추가 (slug, label, isSystem, order)
+  - `Reference.aiCategory` 제거, `Reference.categoryId` + `aiSlug` 추가
+  - `DevCommand` + `DevCategory` enum 삭제, `DevDictionary` 모델 추가
+- [ ] `pnpm prisma migrate dev --name restructure_categories`
+- [ ] 자동 생성된 SQL을 직접 편집 — 기본 4개 INSERT + `UPDATE Reference SET categoryId = (SELECT id FROM Category WHERE slug = LOWER(aiCategory))` 추가 후 enum/컬럼 DROP
+- [ ] `prisma/seed.ts` + `package.json`의 `prisma.seed`
+- [ ] `pnpm prisma generate` 후 `lib/db.ts` import path 검증
+
+**파일**: `prisma/schema.prisma`, `prisma/migrations/<ts>_restructure_categories/`, `prisma/seed.ts`, `package.json`
+
+**완료 기준**: 마이그레이션 통과 + Supabase Table Editor에서 Category 4 row + 기존 Reference row의 categoryId 채워짐
+
+**→ 다음**: Step R2
+
+---
+
+### Step R2. 탭 네비 — 필터 state 기반 재작성 (45분)
+
+**목적**: 라우트 이동·스크롤 없이 탭 클릭 = 섹션 visibility 토글. URL state 보존.
+
+**작업**
+- [ ] `lib/use-tab-filter.ts` (신규) — `useSearchParams` 기반 hook. 반환: `{ top: "all"|"dictionary"|"reference", sub: null|"visual"|"dev"|"fresh"|"archived", isVisible(section), setTop, setSub }`
+- [ ] `components/tab-nav.tsx` 재작성
+  - 상위 탭 [All] [Vibe Dictionary] [Vibe Reference]
+  - 상위가 Dictionary/Reference 일 때만 하위 탭 노출 (slide-down 모션)
+  - 모든 탭은 `<button>`. 라우트 이동 X
+  - 활성 탭 스타일 (DESIGN.md pricing-tab-selected)
+- [ ] 기존 IntersectionObserver / scrollIntoView 코드 제거
+- [ ] `app/page.tsx`에 `<TabNav>` 통합 (sticky 유지)
+
+**파일**: `lib/use-tab-filter.ts`, `components/tab-nav.tsx`, `app/page.tsx`
+
+**완료 기준**: 탭 클릭 시 URL `?tab=...&sub=...` 변경, 새로고침 시 동일 상태로 복귀
+
+**→ 다음**: Step R3
+
+---
+
+### Step R3. 페이지에 필터 적용 (45분)
+
+**목적**: 4개 섹션이 `useTabFilter().isVisible(...)`에 따라 mount/unmount.
+
+**작업**
+- [ ] `app/page.tsx` 또는 새 client wrapper에서 4개 섹션 wrapping
+- [ ] `<AnimatePresence>` + opacity/height 트랜지션 (보드라움 유지, `mode="popLayout"` 또는 `mode="wait"` 결정 후)
+- [ ] All 탭에서는 4개 섹션 모두, 그 외엔 매핑 표대로
+- [ ] 빈 페이지(필터 결과 없음) 케이스도 자연스럽게 처리
+
+**파일**: `app/page.tsx`, 필요시 `components/page-sections.tsx`
+
+**완료 기준**: 탭 전환 시 부드러운 fade in/out, 탭 클릭 → 즉시 반응
+
+**→ 다음**: Step R4
+
+---
+
+### Step R4. AI 분류 + 카드 동적 카테고리 적용 (45분)
+
+**목적**: enum 의존을 제거하고 동적 Category로 전환.
+
+**작업**
+- [ ] `lib/ai/classify.ts` — 시스템 프롬프트의 카테고리 정의는 4개 lowercase slug 그대로. 결과 `category: string` 반환
+- [ ] `lib/collect.ts` — slug로 Category 조회 후 `category: { connect: { slug } }`로 저장. `aiSlug` 기록
+- [ ] `components/inbox-card.tsx` — `Category` enum 의존 제거. `category: { id, slug, label }` 객체 사용. 메뉴의 카테고리 옵션은 page에서 prop으로 전달 (또는 client fetch)
+- [ ] `app/api/references/[id]/route.ts` — `aiCategory` 필드 → `categoryId` 필드 (validation: 존재하는 categoryId만 허용)
+
+**파일**: `lib/ai/classify.ts`, `lib/collect.ts`, `components/inbox-card.tsx`, `app/api/references/[id]/route.ts`
+
+**완료 기준**: 새 URL 제출 → AI 분류 결과의 slug → categoryId 자동 매핑. 기존 카드의 PATCH 카테고리 변경도 동작
+
+**→ 다음**: Step R5
+
+---
+
+### Step R5. Dev Dictionary 모델/API/UI (90분, 기존 Step 16+17 대체)
+
+**목적**: Dev Terminal(명령어 모음) 폐기 → Dev Dictionary(용어·개념 사전) 신설.
+
+**작업**
+- [ ] `app/api/dev-dictionary/route.ts` + `[id]/route.ts` — CRUD
+- [ ] `components/dev-dictionary-card.tsx` — keyword + description + example(mono) + 복사 버튼
+- [ ] `components/dev-dictionary-form.tsx` — Dialog 등록 폼
+- [ ] `app/page.tsx`의 Dev Terminal 섹션을 Dev Dictionary 그리드로 교체 (placeholder 제거)
+- [ ] 라벨·아이콘 정리 (Dev Terminal → Dev Dictionary 모든 위치)
+
+**파일**: `app/api/dev-dictionary/route.ts`, `app/api/dev-dictionary/[id]/route.ts`, `components/dev-dictionary-card.tsx`, `components/dev-dictionary-form.tsx`, `app/page.tsx`
+
+**완료 기준**: "rebase" 등록 → 카드 표시 + 복사 버튼 동작
+
+**→ 다음**: Step R6
+
+---
+
+### Step R6. 카테고리 매니저 + Vibe Archived D&D (90분)
+
+**목적**: 사용자가 카테고리를 추가·삭제·재정렬하고, archived 카드를 드래그로 이동.
+
+**작업**
+- [ ] `app/api/categories/route.ts` (GET, POST) + `app/api/categories/[id]/route.ts` (PATCH, DELETE)
+  - PATCH: isSystem=true는 label만 수정 가능
+  - DELETE: isSystem=true 차단. 그 카테고리 카드는 unclassified로 트랜잭션 이동
+- [ ] `components/category-manager.tsx` — "+ 카테고리 추가" 버튼 + Dialog (label 입력 → slug 자동 생성)
+- [ ] `pnpm add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities`
+- [ ] `components/category-board.tsx` — 카테고리별 droppable 컬럼 + draggable 카드. 드롭 시 `PATCH /api/references/[id]` + optimistic UI
+- [ ] Vibe Archived 섹션을 `<CategoryBoard>`로 교체. 태그 필터(기존 `<TagFilter>`)는 컬럼들 위에 그대로
+- [ ] 빈 컬럼은 점선 placeholder ("여기로 드롭하면 보관됨")
+
+**파일**: `app/api/categories/route.ts`, `app/api/categories/[id]/route.ts`, `components/category-manager.tsx`, `components/category-board.tsx`, `app/page.tsx`
+
+**완료 기준**:
+- "+ 카테고리 추가" → "Animation" 컬럼 생성
+- 카드 드래그 → 다른 컬럼으로 이동 + DB 갱신
+- 카테고리 삭제 → 그 카드들이 unclassified로 자동 이동
+
+**→ 다음**: Step 13 (검색바 자리잡기 — 기존 흐름 재개)
 
 ---
 
@@ -737,43 +899,22 @@ after(async () => {
 
 ---
 
-### Step 16. Dev Terminal API (30분)
+### Step 16. Dev Terminal API (30분) — ❌ 폐기
 
-**목적**: Git/Claude Code/Shell 명령어 모음의 CRUD 백엔드.
-
-**작업**
-- [ ] `app/api/dev-commands/route.ts` — GET, POST
-- [ ] `app/api/dev-commands/[id]/route.ts` — PATCH, DELETE
-- [ ] POST body: `{ category, title, body, description }`
-
-**파일**: `app/api/dev-commands/route.ts`, `app/api/dev-commands/[id]/route.ts`
-
-**완료 기준**: curl로 `git rebase -i HEAD~3` 등록·조회 가능
-
-**→ 다음**: Step 17
+> **Step R5(Dev Dictionary 모델/API/UI)로 대체됨.**
+> Dev Terminal(명령어 모음) 컨셉이 Dev Dictionary(용어·개념 사전)로 의미 재정의되면서 본 단계는 진행하지 않습니다. 데이터 모델·API·UI 모두 R5에서 새로 작성됩니다.
 
 ---
 
-### Step 17. Dev Terminal UI + 복사 버튼 (45분)
+### Step 17. Dev Terminal UI + 복사 버튼 (45분) — ❌ 폐기
 
-**목적**: `#dev` 섹션에 명령어 카드 + 등록 모달.
-
-**작업**
-- [ ] `components/dev-command-card.tsx` — Badge + title + 코드 블록(monospace) + 설명 + 복사 버튼
-- [ ] `components/dev-command-form.tsx` — Dialog로 등록
-- [ ] `#dev` 섹션 — 카테고리별 그룹 제목 + 그리드
-
-**파일**: `components/dev-command-card.tsx`, `components/dev-command-form.tsx`
-
-**완료 기준**: `git rebase -i HEAD~3` 등록 → 카드 표시 → 복사 → 터미널 붙여넣기 동작
-
-**→ 다음**: Step 18
+> **Step R5로 대체됨.** 사유 위와 동일.
 
 ---
 
 ### Step 18. 통합 검색 API + 검색바 연결 (60분)
 
-**목적**: 검색바 한 곳에서 references / visual dictionary / dev commands 모두 검색.
+**목적**: 검색바 한 곳에서 references / visual dictionary / dev dictionary 모두 검색.
 
 **작업**
 - [ ] `app/api/search/route.ts` — `?q=` 쿼리
@@ -781,10 +922,10 @@ after(async () => {
 - [ ] 3개 테이블 각각 findMany 후 합치기:
   - References: title/aiSummary ILIKE
   - VisualDictionary: keyword/vibeDescription/prompts.body ILIKE
-  - DevCommand: title/body/description ILIKE
+  - **DevDictionary**: keyword/description/example ILIKE (R5에서 변경)
 - [ ] 응답: `[{ source: "reference"|"visual"|"dev", id, title, snippet, ... }]`
 - [ ] 검색바 결과를 dropdown 또는 popover로 표시 (출처 라벨 함께)
-- [ ] 결과 클릭 시 해당 섹션으로 스크롤
+- [ ] 결과 클릭 시 **`useTabFilter`로 해당 섹션을 활성화**(예: source=visual → top=dictionary, sub=visual). 라우트 이동·스크롤 없음
 
 **파일**: `app/api/search/route.ts`, `components/search-bar.tsx`
 

@@ -24,7 +24,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { duration, ease } from "@/lib/motion";
-import type { Category, Status } from "@/lib/generated/prisma/enums";
+import type { Status } from "@/lib/generated/prisma/enums";
+
+export type CategoryOption = {
+  id: string;
+  slug: string;
+  label: string;
+  isSystem: boolean;
+};
 
 export type InboxCardData = {
   id: string;
@@ -33,38 +40,38 @@ export type InboxCardData = {
   ogImage: string | null;
   ogDescription: string | null;
   aiSummary: string | null;
-  aiCategory: Category;
+  category: { id: string; slug: string; label: string } | null;
   status: Status;
   tags: { tag: { name: string } }[];
 };
 
-const CATEGORIES: { value: Category; label: string }[] = [
-  { value: "VISUAL", label: "Visual" },
-  { value: "DEV", label: "Dev" },
-  { value: "REFERENCE", label: "Reference" },
-  { value: "UNCLASSIFIED", label: "분류 안 됨" },
-];
+/** 시스템 4개 slug에 한해 카드 라벨 색상을 4단계 회색으로 차등. 그 외 사용자 카테고리는 ink-muted. */
+function categoryTextColor(slug: string | undefined | null): string {
+  switch (slug) {
+    case "visual":
+      return "text-ink";
+    case "dev":
+      return "text-ink-muted";
+    case "reference":
+      return "text-ink-subtle";
+    case "unclassified":
+      return "text-ink-tertiary";
+    default:
+      return "text-ink-muted";
+  }
+}
 
-const categoryLabel: Record<Category, string> = {
-  VISUAL: "Visual",
-  DEV: "Dev",
-  REFERENCE: "Reference",
-  UNCLASSIFIED: "분류 중",
+const SYSTEM_DESTINATION: Record<string, string> = {
+  visual: "Visual Dictionary",
+  dev: "Dev Dictionary",
+  reference: "Reference Hub",
+  unclassified: "Reference Hub",
 };
 
-const archiveDestination: Record<Category, string> = {
-  VISUAL: "Visual Dictionary",
-  DEV: "Dev Terminal",
-  REFERENCE: "Reference Hub",
-  UNCLASSIFIED: "Reference Hub",
-};
-
-const categoryTextColor: Record<Category, string> = {
-  VISUAL: "text-ink",
-  DEV: "text-ink-muted",
-  REFERENCE: "text-ink-subtle",
-  UNCLASSIFIED: "text-ink-tertiary",
-};
+function archiveDestinationLabel(slug: string | undefined | null): string {
+  if (slug && SYSTEM_DESTINATION[slug]) return SYSTEM_DESTINATION[slug];
+  return "Vibe Archived";
+}
 
 function hostFromUrl(url: string): string {
   try {
@@ -77,17 +84,22 @@ function hostFromUrl(url: string): string {
 export function InboxCard({
   data,
   index,
+  categories,
   onRemove,
 }: {
   data: InboxCardData;
   index: number;
+  categories: CategoryOption[];
   onRemove?: (id: string) => void;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [category, setCategory] = useState<Category>(data.aiCategory);
+  const [category, setCategory] = useState(data.category);
   const router = useRouter();
   const isClassifying = !data.aiSummary;
   const host = hostFromUrl(data.url);
+
+  const currentLabel = category?.label ?? "분류 중";
+  const currentSlug = category?.slug;
 
   const handleArchive = () => {
     startTransition(async () => {
@@ -97,7 +109,7 @@ export function InboxCard({
         body: JSON.stringify({ status: "ARCHIVED" }),
       });
       if (res.ok) {
-        toast.success(`${archiveDestination[category]}에 보관했어요`);
+        toast.success(`${archiveDestinationLabel(currentSlug)}에 보관했어요`);
         onRemove?.(data.id);
         router.refresh();
       } else {
@@ -114,7 +126,7 @@ export function InboxCard({
         body: JSON.stringify({ status: "UNREAD" }),
       });
       if (res.ok) {
-        toast.success("Smart Inbox로 복귀했어요");
+        toast.success("Vibe Fresh로 복귀했어요");
         onRemove?.(data.id);
         router.refresh();
       } else {
@@ -136,20 +148,21 @@ export function InboxCard({
     });
   };
 
-  const handleCategoryChange = (next: Category) => {
-    if (next === category) return;
-    setCategory(next); // optimistic
+  const handleCategoryChange = (next: CategoryOption) => {
+    if (next.id === category?.id) return;
+    const previous = category;
+    setCategory({ id: next.id, slug: next.slug, label: next.label }); // optimistic
     startTransition(async () => {
       const res = await fetch(`/api/references/${data.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ aiCategory: next }),
+        body: JSON.stringify({ categoryId: next.id }),
       });
       if (res.ok) {
-        toast.success(`${categoryLabel[next]}로 변경됨`);
+        toast.success(`${next.label}로 변경됨`);
         router.refresh();
       } else {
-        setCategory(category); // rollback
+        setCategory(previous); // rollback
         toast.error("변경 실패");
       }
     });
@@ -160,7 +173,11 @@ export function InboxCard({
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96, transition: { duration: duration.medium, ease: ease.out } }}
+      exit={{
+        opacity: 0,
+        scale: 0.96,
+        transition: { duration: duration.medium, ease: ease.out },
+      }}
       transition={{ delay: index * 0.04, duration: duration.base, ease: ease.out }}
       whileHover={{ y: -2 }}
       className={`group relative overflow-hidden bg-surface-1 border border-hairline rounded-[12px] hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-200 ${
@@ -187,14 +204,14 @@ export function InboxCard({
                 카테고리 변경
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="bg-surface-2 border-hairline-strong text-ink">
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <DropdownMenuItem
-                    key={c.value}
-                    onClick={() => handleCategoryChange(c.value)}
+                    key={c.id}
+                    onClick={() => handleCategoryChange(c)}
                     className="hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
                   >
-                    {category === c.value && <Check className="w-3 h-3 mr-2" />}
-                    {category !== c.value && <span className="w-3 mr-2" />}
+                    {category?.id === c.id && <Check className="w-3 h-3 mr-2" />}
+                    {category?.id !== c.id && <span className="w-3 mr-2 inline-block" />}
                     {c.label}
                   </DropdownMenuItem>
                 ))}
@@ -215,7 +232,7 @@ export function InboxCard({
                 className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
               >
                 <ArchiveRestore className="w-3.5 h-3.5 mr-2" />
-                Inbox로 복귀
+                Vibe Fresh로 복귀
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
@@ -257,9 +274,9 @@ export function InboxCard({
           <div className="flex items-center gap-2 mb-2.5">
             <Badge
               variant="secondary"
-              className={`bg-surface-2 ${categoryTextColor[category]} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-2 py-0.5`}
+              className={`bg-surface-2 ${categoryTextColor(currentSlug)} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-2 py-0.5`}
             >
-              {categoryLabel[category]}
+              {currentLabel}
             </Badge>
             <span className="text-[12px] text-ink-tertiary truncate flex items-center gap-1">
               <ExternalLink className="w-3 h-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />

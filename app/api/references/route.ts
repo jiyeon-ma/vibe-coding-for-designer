@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { collectUrl } from "@/lib/collect";
-import type { Status, Category } from "@/lib/generated/prisma/enums";
+import type { Status } from "@/lib/generated/prisma/enums";
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -36,22 +36,15 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const statusParam = searchParams.get("status");
-  const categoryParam = searchParams.get("category");
+  const categorySlug = searchParams.get("category"); // 이제 slug 기반
 
   const validStatus = new Set<Status>(["UNREAD", "ARCHIVED"]);
-  const validCategory = new Set<Category>([
-    "VISUAL",
-    "DEV",
-    "REFERENCE",
-    "UNCLASSIFIED",
-  ]);
-
-  const where: { status?: Status; aiCategory?: Category } = {};
+  const where: { status?: Status; category?: { slug: string } } = {};
   if (statusParam && validStatus.has(statusParam as Status)) {
     where.status = statusParam as Status;
   }
-  if (categoryParam && validCategory.has(categoryParam as Category)) {
-    where.aiCategory = categoryParam as Category;
+  if (categorySlug) {
+    where.category = { slug: categorySlug };
   }
 
   const refs = await db.reference.findMany({
@@ -59,6 +52,7 @@ export async function GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
     take: 100,
     include: {
+      category: true,
       tags: { include: { tag: true } },
     },
   });

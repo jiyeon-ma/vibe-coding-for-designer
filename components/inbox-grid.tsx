@@ -2,16 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { InboxCard, type InboxCardData } from "./inbox-card";
+import { InboxCard, type InboxCardData, type CategoryOption } from "./inbox-card";
 import { TagFilter } from "./tag-filter";
 
 export function InboxGrid({
   initial,
+  categories,
   showTagFilter = false,
   emptyTitle = "아직 비어있어요.",
   emptyHint = "위 입력창에 첫 링크를 붙여넣어 보세요.",
 }: {
   initial: InboxCardData[];
+  categories: CategoryOption[];
   showTagFilter?: boolean;
   emptyTitle?: string;
   emptyHint?: string;
@@ -63,6 +65,7 @@ export function InboxGrid({
                 key={ref.id}
                 index={i}
                 data={ref}
+                categories={categories}
                 onRemove={(id) => setItems((prev) => prev.filter((r) => r.id !== id))}
               />
             ))}
