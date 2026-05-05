@@ -5,6 +5,7 @@ import { InboxGrid } from "@/components/inbox-grid";
 import { TabNav } from "@/components/tab-nav";
 import { FilteredSection } from "@/components/filtered-section";
 import { DevDictionaryGrid } from "@/components/dev-dictionary-grid";
+import { CategoryBoard } from "@/components/category-board";
 import type { InboxCardData, CategoryOption } from "@/components/inbox-card";
 
 export const dynamic = "force-dynamic";
@@ -132,20 +133,28 @@ export default async function Home() {
           </Section>
         </FilteredSection>
 
-        {/* Vibe Archived — 모든 카테고리의 archived 카드 (R6에서 카테고리 보드로 교체 예정) */}
+        {/* Vibe Archived — 카테고리 컬럼 + D&D + 태그 필터 */}
         <FilteredSection id="reference">
           <Section
             id="reference"
             title="Vibe Archived"
             meta={`${archivedAll.length}개의 보관 자료`}
           >
-            <InboxGrid
-              initial={archivedAll.map(toCardData)}
-              categories={categories}
-              showTagFilter
-              emptyTitle="보관한 레퍼런스가 없어요."
-              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-            />
+            {archivedAll.length === 0 ? (
+              <div className="border border-dashed border-hairline rounded-[12px] py-20 px-6 text-center">
+                <p className="text-[16px] text-ink-subtle leading-[1.5]">
+                  보관한 레퍼런스가 없어요.
+                </p>
+                <p className="text-[14px] text-ink-tertiary mt-1">
+                  Vibe Fresh 카드를 보관하면 여기로 모입니다.
+                </p>
+              </div>
+            ) : (
+              <CategoryBoard
+                initial={archivedAll.map(toCardData)}
+                categories={categories}
+              />
+            )}
           </Section>
         </FilteredSection>
       </Suspense>
