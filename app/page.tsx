@@ -40,41 +40,21 @@ export default async function Home() {
     tags: { include: { tag: true } },
   };
 
-  const [categoriesRaw, inbox, archivedVisual, archivedDev, archivedReference] =
-    await Promise.all([
-      db.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }] }),
-      db.reference.findMany({
-        where: { status: "UNREAD" },
-        orderBy: { createdAt: "desc" },
-        take: 60,
-        include,
-      }),
-      db.reference.findMany({
-        where: { status: "ARCHIVED", category: { slug: "visual" } },
-        orderBy: { archivedAt: "desc" },
-        take: 60,
-        include,
-      }),
-      db.reference.findMany({
-        where: { status: "ARCHIVED", category: { slug: "dev" } },
-        orderBy: { archivedAt: "desc" },
-        take: 60,
-        include,
-      }),
-      db.reference.findMany({
-        where: {
-          status: "ARCHIVED",
-          OR: [
-            { category: { slug: "reference" } },
-            { category: { slug: "unclassified" } },
-            { category: null },
-          ],
-        },
-        orderBy: { archivedAt: "desc" },
-        take: 60,
-        include,
-      }),
-    ]);
+  const [categoriesRaw, inbox, archivedAll] = await Promise.all([
+    db.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }] }),
+    db.reference.findMany({
+      where: { status: "UNREAD" },
+      orderBy: { createdAt: "desc" },
+      take: 60,
+      include,
+    }),
+    db.reference.findMany({
+      where: { status: "ARCHIVED" },
+      orderBy: { archivedAt: "desc" },
+      take: 120,
+      include,
+    }),
+  ]);
 
   const categories: CategoryOption[] = categoriesRaw.map((c) => ({
     id: c.id,
@@ -117,7 +97,7 @@ export default async function Home() {
           </Section>
         </FilteredSection>
 
-        {/* Visual Dictionary */}
+        {/* Visual Dictionary — 등록한 키워드·프롬프트만 (Step 14~15에서 추가) */}
         <FilteredSection id="visual">
           <Section
             id="visual"
@@ -125,24 +105,14 @@ export default async function Home() {
             meta="감성 키워드 ↔ AI 프롬프트"
           >
             <Placeholder>
-              곧 키워드·프롬프트 등록 기능이 추가됩니다. 그동안 보관한 시각 레퍼런스를
-              아래에서 태그별로 살펴보세요.
+              곧 등록 기능이 추가됩니다. 디자인 감성 키워드(예: "유리 모피즘")와
+              그에 매칭되는 Midjourney·three.js 프롬프트를 한 번에 보관하고 한 번
+              클릭으로 복사할 수 있게 될 예정입니다.
             </Placeholder>
-            <SubSectionTitle
-              title="보관한 레퍼런스"
-              count={archivedVisual.length}
-            />
-            <InboxGrid
-              initial={archivedVisual.map(toCardData)}
-              categories={categories}
-              showTagFilter
-              emptyTitle="보관한 시각 레퍼런스가 없어요."
-              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-            />
           </Section>
         </FilteredSection>
 
-        {/* Dev Dictionary */}
+        {/* Dev Dictionary — 등록한 용어·개념만 (R5에서 추가) */}
         <FilteredSection id="dev">
           <Section
             id="dev"
@@ -150,29 +120,22 @@ export default async function Home() {
             meta="용어 · 개념 사전"
           >
             <Placeholder>
-              곧 용어·개념 등록 기능이 추가됩니다. 그동안 보관한 개발 자료를 아래에서
-              태그별로 살펴보세요.
+              곧 등록 기능이 추가됩니다. 바이브 코딩에서 자주 마주치는 용어(예:
+              "rebase", "tool use")의 한 줄 설명과 예시 코드를 모아 두는 영역이
+              될 예정입니다.
             </Placeholder>
-            <SubSectionTitle title="보관한 자료" count={archivedDev.length} />
-            <InboxGrid
-              initial={archivedDev.map(toCardData)}
-              categories={categories}
-              showTagFilter
-              emptyTitle="보관한 개발 자료가 없어요."
-              emptyHint="Vibe Fresh 카드를 보관하면 여기로 모입니다."
-            />
           </Section>
         </FilteredSection>
 
-        {/* Vibe Archived (R6에서 카테고리 보드로 교체 예정) */}
+        {/* Vibe Archived — 모든 카테고리의 archived 카드 (R6에서 카테고리 보드로 교체 예정) */}
         <FilteredSection id="reference">
           <Section
             id="reference"
             title="Vibe Archived"
-            meta={`${archivedReference.length}개의 보관 자료`}
+            meta={`${archivedAll.length}개의 보관 자료`}
           >
             <InboxGrid
-              initial={archivedReference.map(toCardData)}
+              initial={archivedAll.map(toCardData)}
               categories={categories}
               showTagFilter
               emptyTitle="보관한 레퍼런스가 없어요."
