@@ -4,6 +4,7 @@ import { UrlSubmit } from "@/components/url-submit";
 import { InboxGrid } from "@/components/inbox-grid";
 import { TabNav } from "@/components/tab-nav";
 import { FilteredSection } from "@/components/filtered-section";
+import { DevDictionaryGrid } from "@/components/dev-dictionary-grid";
 import type { InboxCardData, CategoryOption } from "@/components/inbox-card";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +41,7 @@ export default async function Home() {
     tags: { include: { tag: true } },
   };
 
-  const [categoriesRaw, inbox, archivedAll] = await Promise.all([
+  const [categoriesRaw, inbox, archivedAll, devDictionary] = await Promise.all([
     db.category.findMany({ orderBy: [{ order: "asc" }, { createdAt: "asc" }] }),
     db.reference.findMany({
       where: { status: "UNREAD" },
@@ -54,6 +55,7 @@ export default async function Home() {
       take: 120,
       include,
     }),
+    db.devDictionary.findMany({ orderBy: { createdAt: "desc" }, take: 200 }),
   ]);
 
   const categories: CategoryOption[] = categoriesRaw.map((c) => ({
@@ -112,18 +114,21 @@ export default async function Home() {
           </Section>
         </FilteredSection>
 
-        {/* Dev Dictionary — 등록한 용어·개념만 (R5에서 추가) */}
+        {/* Dev Dictionary — 등록한 용어·개념 */}
         <FilteredSection id="dev">
           <Section
             id="dev"
             title="Dev Dictionary"
-            meta="용어 · 개념 사전"
+            meta={`${devDictionary.length}개의 용어`}
           >
-            <Placeholder>
-              곧 등록 기능이 추가됩니다. 바이브 코딩에서 자주 마주치는 용어(예:
-              "rebase", "tool use")의 한 줄 설명과 예시 코드를 모아 두는 영역이
-              될 예정입니다.
-            </Placeholder>
+            <DevDictionaryGrid
+              initial={devDictionary.map((d) => ({
+                id: d.id,
+                keyword: d.keyword,
+                description: d.description,
+                example: d.example,
+              }))}
+            />
           </Section>
         </FilteredSection>
 
