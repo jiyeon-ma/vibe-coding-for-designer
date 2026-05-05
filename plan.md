@@ -382,29 +382,35 @@ export const springSoft = {
 
 ---
 
-### Step 3. Supabase + Prisma 연결 (45분)
+### Step 3. Supabase + Prisma 연결 (45분) ✅
 
 **목적**: 모든 카드·명령어를 정해진 모양으로 저장하기 위한 DB 셋업.
 
 **작업**
-- [ ] Supabase → Project Settings → Database → **Connection string** (URI, Direct connection) 복사
-- [ ] `pnpm add prisma @prisma/client && pnpm prisma init`
-- [ ] `.env.local`에 `DATABASE_URL` 채우기
-- [ ] `prisma/schema.prisma`에 §데이터 모델 전체 붙여넣기
-- [ ] `pnpm prisma migrate dev --name init`
-- [ ] `lib/db.ts` 작성
+- [x] Supabase Connection string 받음 (사용자 제공)
+- [x] `pnpm add prisma @prisma/client` (Prisma 7.8.0)
+- [x] `pnpm prisma init` → `prisma/schema.prisma`, `prisma.config.ts` 생성
+- [x] `.env`에 `DATABASE_URL` 입력 (Session Pooler URL)
+- [x] schema.prisma에 데이터 모델 전체 작성 (Reference, Tag, VisualDictionary, Prompt, DevCommand + 5 enums)
+- [x] `pnpm prisma migrate dev --name init` → 마이그레이션 적용 (`20260505033050_init`)
+- [x] `pnpm prisma generate` → `lib/generated/prisma/`에 client 생성
+- [x] `pnpm add @prisma/adapter-pg pg` + `pnpm add -D @types/pg`
+- [x] `lib/db.ts` 작성 (PrismaPg adapter + singleton)
 
-```ts
-// lib/db.ts
-import { PrismaClient } from "@prisma/client"
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
-export const db = globalForPrisma.prisma ?? new PrismaClient()
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db
-```
+**파일**: `prisma/schema.prisma`, `prisma.config.ts`, `lib/db.ts`, `.env`, `.env.example`, `prisma/migrations/`
 
-**파일**: `prisma/schema.prisma`, `lib/db.ts`, `.env.local`, `prisma/migrations/`
+> 💡 **Prisma 7 변화**:
+> - `prisma-client` provider (NEW)가 default. 이전 `prisma-client-js`는 deprecated
+> - PrismaClient는 **Driver Adapter 필수** — `@prisma/adapter-pg`로 pg 연결
+> - 환경변수는 `prisma.config.ts`가 dotenv로 직접 로드
+>
+> 💡 **Supabase 연결 트러블슈팅**:
+> - Direct connection (`db.PROJECT.supabase.co:5432`)은 **IPv6 전용**. 무료 tier + 일반 ISP에서 도달 불가
+> - Session Pooler (`aws-1-ap-northeast-2.pooler.supabase.com:5432`) 사용
+> - Username 형식: `postgres.PROJECT_REF` (project ref가 username의 일부)
+> - 자동 추측한 region 도메인이 다를 수 있으므로, 안 되면 Supabase 대시보드의 Connection string 복사
 
-**완료 기준**: Supabase Table Editor에서 Reference, VisualDictionary, DevCommand, Tag, Prompt 테이블 보임
+**완료 기준**: ✅ 마이그레이션 SQL 적용 + Prisma client 생성 + 타입 체크 통과
 
 **→ 다음**: Step 4
 
