@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { UrlSubmit } from "@/components/url-submit";
-import { InboxCard } from "@/components/inbox-card";
+import { InboxGrid } from "@/components/inbox-grid";
 
 export const dynamic = "force-dynamic";
 
@@ -43,35 +43,18 @@ export default async function Home() {
           </span>
         </div>
 
-        {references.length === 0 ? (
-          <div className="border border-dashed border-hairline rounded-[12px] py-20 px-6 text-center">
-            <p className="text-[16px] text-ink-subtle leading-[1.5]">
-              아직 비어있어요.
-            </p>
-            <p className="text-[14px] text-ink-tertiary mt-1">
-              위 입력창에 첫 링크를 붙여넣어 보세요.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {references.map((ref, i) => (
-              <InboxCard
-                key={ref.id}
-                index={i}
-                data={{
-                  id: ref.id,
-                  url: ref.url,
-                  title: ref.title,
-                  ogImage: ref.ogImage,
-                  ogDescription: ref.ogDescription,
-                  aiSummary: ref.aiSummary,
-                  aiCategory: ref.aiCategory,
-                  tags: ref.tags,
-                }}
-              />
-            ))}
-          </div>
-        )}
+        <InboxGrid
+          initial={references.map((ref) => ({
+            id: ref.id,
+            url: ref.url,
+            title: ref.title,
+            ogImage: ref.ogImage,
+            ogDescription: ref.ogDescription,
+            aiSummary: ref.aiSummary,
+            aiCategory: ref.aiCategory,
+            tags: ref.tags,
+          }))}
+        />
       </section>
     </main>
   );

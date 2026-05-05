@@ -416,13 +416,13 @@ export const springSoft = {
 
 ---
 
-### Step 4. OG 메타 추출 유틸 (30분)
+### Step 4. OG 메타 추출 유틸 (30분) ✅
 
 **목적**: 링크에서 제목·이미지·설명을 자동으로 뽑아오는 함수.
 
 **작업**
-- [ ] `pnpm add open-graph-scraper`
-- [ ] `lib/og.ts` 작성 — 5초 타임아웃 필수
+- [x] `pnpm add open-graph-scraper` (6.11.0)
+- [x] `lib/og.ts` 작성 — 5초 타임아웃 + 일반 브라우저 UA 위장 + 실패 시 null 객체
 
 ```ts
 // lib/og.ts
@@ -449,12 +449,12 @@ export async function fetchOG(url: string) {
 
 ---
 
-### Step 5. 공통 수집 함수 + POST /api/references (60분)
+### Step 5. 공통 수집 함수 + POST /api/references (60분) ✅
 
 **목적**: 웹·텔레그램 두 채널이 공유할 **공통 수집 함수** 작성. 그 위에 웹용 API 핸들러를 얹음.
 
 **작업**
-- [ ] `lib/collect.ts` 작성 — 채널 무관 공통 로직
+- [x] `lib/collect.ts` 작성 — 채널 무관 공통 로직 (URL 정규화 + 중복 체크 + OG 추출 + INSERT)
 
 ```ts
 // lib/collect.ts
@@ -474,51 +474,50 @@ export async function collectUrl(rawUrl: string, source: "MANUAL" | "TELEGRAM") 
 }
 ```
 
-- [ ] `app/api/references/route.ts` 작성
-- [ ] POST: body의 `url`을 받아 `collectUrl(url, "MANUAL")` 호출 → duplicate면 409, created면 200
-- [ ] GET: `?status=UNREAD` 등 쿼리 필터, 최신순 반환
+- [x] `app/api/references/route.ts` 작성
+- [x] POST: URL 검증(http/https, 형식) + `collectUrl(url, "MANUAL")` → 201/409/400
+- [x] GET: `?status=` `?category=` 필터, 최신순, take 100
 
 **파일**: `lib/collect.ts`, `app/api/references/route.ts`
 
-**완료 기준**: curl로 POST → DB row 생성, 같은 URL 두 번째는 409
+**완료 기준**: ✅ curl 테스트 — 첫 POST 201, 같은 URL 두 번째 409, 잘못된 URL 400
 
 **→ 다음**: Step 6
 
 ---
 
-### Step 6. URL 입력 컴포넌트 (30분)
+### Step 6. URL 입력 컴포넌트 (30분) ✅
 
 **목적**: 사용자가 메인 화면에서 URL을 붙여넣고 제출할 큰 입력창.
 
 **작업**
-- [ ] `components/url-submit.tsx` (Client Component)
-- [ ] 큼지막한 Input + Button (모바일 친화)
-- [ ] 제출 시 `fetch("/api/references", { method: "POST" })`
-- [ ] 성공 시 sonner 토스트 + 입력창 비우기 + `router.refresh()`
-- [ ] 409 시 "이미 보관됨" 토스트
+- [x] `components/url-submit.tsx` (Client Component, useTransition)
+- [x] 큼지막한 Input(h-11) + Button — surface-1 + hairline border, brand-focus ring
+- [x] 제출 시 `fetch("/api/references")` + `router.refresh()`
+- [x] 성공/중복/실패 sonner 토스트 분기
 
 **파일**: `components/url-submit.tsx`
 
-**완료 기준**: 메인에서 URL 제출 시 성공 토스트, DB에 row 추가됨
+**완료 기준**: ✅ 메인에서 URL 제출 → 성공 토스트, DB에 row 추가, 카드 즉시 노출
 
 **→ 다음**: Step 7
 
 ---
 
-### Step 7. Inbox 카드 + 메인 그리드 (45분)
+### Step 7. Inbox 카드 + 메인 그리드 (45분) ✅
 
 **목적**: 저장된 카드들이 화면에 보이게. AI 요약 자리는 비워둠 (다음 단계에서 채움).
 
 **작업**
-- [ ] `components/inbox-card.tsx` — Reference row 받아 카드 렌더 (OG 이미지, 제목, 도메인, 요약 placeholder)
-- [ ] aiSummary가 null이면 "분류 중..." 스켈레톤
-- [ ] `app/page.tsx`를 Server Component로 — `db.reference.findMany({ where: { status: "UNREAD" }, orderBy: { createdAt: "desc" } })`
-- [ ] 그리드 (md:3열, sm:1열)
-- [ ] `<UrlSubmit />` 상단 + Inbox 그리드
+- [x] `components/inbox-card.tsx` — OG 이미지(16:9, fallback "NO PREVIEW"), 카테고리 뱃지(회색 4단계), 제목(line-clamp-2), 요약/스켈레톤, 태그
+- [x] `framer-motion` `fadeUp` + 40ms stagger + `whileHover y:-2` (lib/motion.ts 토큰 사용)
+- [x] `app/page.tsx` Server Component — `db.reference.findMany` UNREAD 60개
+- [x] 그리드 (lg:3열, md:2열, sm:1열) + 빈 상태 카피
+- [x] Hero 섹션 (display-lg "제2의 뇌" + UrlSubmit)
 
 **파일**: `components/inbox-card.tsx`, `app/page.tsx`
 
-**완료 기준**: URL 제출 → 카드가 메인에 즉시 나타남 (요약 자리 "분류 중...")
+**완료 기준**: ✅ 카드가 메인에 stagger fade-up으로 떠오름. 요약 자리는 분류 중 skeleton.
 
 **→ 다음**: Step 8
 
