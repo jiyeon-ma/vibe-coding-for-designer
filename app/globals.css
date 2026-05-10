@@ -7,7 +7,7 @@
 /* ===========================================
  * Vibe Archive — Design Tokens
  * Source: DESIGN.md (Linear-style dark monochrome)
- * 라이트 모드 없음. 라벤더는 brand·CTA·focus·link에만 절제.
+ * 라이트 모드 없음. Electric blue는 brand·CTA·focus·link에만 절제.
  * =========================================== */
 
 :root {
@@ -23,16 +23,24 @@
   --hairline-strong: #34343a;
   --hairline-tertiary: #3e3e44;
 
+  /* Glass surfaces (Spline-inspired) — 반투명 + backdrop blur 페어 */
+  --glass-1: rgba(15, 16, 17, 0.55);   /* 카드/탭 컨테이너 */
+  --glass-2: rgba(20, 21, 22, 0.7);    /* 살짝 진한 글래스 (sticky nav) */
+
+  /* Soft lift shadows — 테두리 대신 그림자로 깊이 (Spline식) */
+  --lift-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -12px rgba(0,0,0,0.55);
+  --lift-card-hover: 0 1px 0 rgba(255,255,255,0.06) inset, 0 14px 36px -16px rgba(0,0,0,0.7);
+
   /* Ink (text) */
   --ink: #f7f8f8;
   --ink-muted: #d0d6e0;
   --ink-subtle: #8a8f98;
   --ink-tertiary: #62666d;
 
-  /* Brand (lavender — 절제 사용) */
-  --brand: #5e6ad2;
-  --brand-hover: #828fff;
-  --brand-focus: #5e69d1;
+  /* Brand (Electric Blue — 절제 사용) */
+  --brand: #437EFF;
+  --brand-hover: #6694FF;
+  --brand-focus: #3870E5;
 
   /* Semantic */
   --semantic-success: #27a644;
@@ -121,11 +129,20 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
 
-  /* Radius (DESIGN.md) */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Radius — Spline-inspired 부드러운 라운드 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 28px;
+
+  /* Glass tokens (Tailwind utility로 노출) */
+  --color-glass-1: var(--glass-1);
+  --color-glass-2: var(--glass-2);
+
+  /* Shadow tokens (Tailwind utility로 노출) */
+  --shadow-lift: var(--lift-card);
+  --shadow-lift-hover: var(--lift-card-hover);
 }
 
 @layer base {

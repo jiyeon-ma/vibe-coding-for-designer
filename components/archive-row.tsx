@@ -58,7 +58,7 @@ export function ArchiveRow({
         body: JSON.stringify({ status: "UNREAD" }),
       });
       if (res.ok) {
-        toast.success("Vibe Fresh로 복귀했어요");
+        toast.success("New 탭으로 복귀했어요");
         onRemove?.(data.id);
         router.refresh();
       } else {
@@ -112,7 +112,7 @@ export function ArchiveRow({
         transition: { duration: duration.medium, ease: ease.out },
       }}
       transition={{ delay: Math.min(index, 12) * 0.02, duration: duration.base, ease: ease.out }}
-      className={`group relative flex items-center gap-5 px-5 py-5 border-b border-hairline last:border-b-0 hover:bg-surface-2/60 transition-colors duration-150 ${
+      className={`group relative flex items-center gap-6 px-7 py-6 border-b border-hairline last:border-b-0 hover:bg-surface-2/60 transition-colors duration-150 ${
         isPending ? "opacity-50 pointer-events-none" : ""
       }`}
     >
@@ -121,7 +121,7 @@ export function ArchiveRow({
         href={data.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 size-[72px] rounded-lg overflow-hidden border border-hairline bg-canvas relative"
+        className="shrink-0 size-[80px] rounded-[14px] overflow-hidden border border-hairline bg-canvas relative"
       >
         {data.ogImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -148,10 +148,10 @@ export function ArchiveRow({
           rel="noopener noreferrer"
           className="block"
         >
-          <h4 className="text-[17px] font-semibold tracking-[-0.1px] text-ink leading-[1.35] truncate mb-1">
+          <h4 className="text-[18px] font-semibold tracking-[-0.2px] text-ink leading-[1.3] truncate mb-1.5">
             {data.title ?? data.url}
           </h4>
-          <p className="text-[13px] text-ink-subtle leading-[1.45] truncate">
+          <p className="text-[14px] text-ink-subtle leading-[1.45] truncate">
             {data.aiSummary ?? host}
           </p>
         </a>
@@ -211,7 +211,7 @@ export function ArchiveRow({
               className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
             >
               <ArchiveRestore className="w-3.5 h-3.5 mr-2" />
-              Vibe Fresh로 복귀
+              New 탭으로 복귀
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleDelete}

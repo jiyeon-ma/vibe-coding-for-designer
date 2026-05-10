@@ -38,7 +38,10 @@ export function UrlSubmit() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3 w-full">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-2 w-full p-2 rounded-full bg-glass-2 backdrop-blur-2xl border border-hairline shadow-lift focus-within:border-hairline-strong transition-colors duration-200"
+    >
       <Input
         type="url"
         inputMode="url"
@@ -47,12 +50,12 @@ export function UrlSubmit() {
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         disabled={isPending}
-        className="h-12 bg-surface-1 border-hairline text-ink placeholder:text-ink-tertiary text-[15px] tracking-[-0.05px] px-4 focus-visible:ring-brand-focus/50 focus-visible:ring-2 focus-visible:border-hairline-strong transition-colors duration-150"
+        className="h-12 flex-1 bg-transparent border-0 text-ink placeholder:text-ink-tertiary text-[16px] tracking-[-0.1px] px-5 focus-visible:ring-0 focus-visible:border-0 shadow-none"
       />
       <Button
         type="submit"
         disabled={isPending || !url.trim()}
-        className="h-12 px-6 bg-brand text-white hover:bg-brand-hover transition-colors duration-150 font-semibold text-[14px] tracking-[0]"
+        className="h-12 px-7 rounded-full bg-brand text-white hover:bg-brand-hover transition-colors duration-150 font-semibold text-[14px] tracking-[0]"
       >
         {isPending ? "보관 중..." : "보관"}
       </Button>

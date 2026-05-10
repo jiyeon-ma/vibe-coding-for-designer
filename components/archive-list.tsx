@@ -96,9 +96,9 @@ function CategorySection({
 }) {
   return (
     <section>
-      <header className="flex items-center justify-between mb-5 pb-3 border-b border-hairline">
+      <header className="flex items-center justify-between mb-6 pb-4 border-b border-hairline">
         <div className="flex items-baseline gap-3">
-          <h3 className="text-[20px] font-semibold tracking-[-0.3px] text-ink">
+          <h3 className="text-[26px] font-semibold tracking-[-0.6px] text-ink leading-[1.15]">
             {category.label}
           </h3>
           <span className="text-[13px] text-ink-tertiary tabular-nums">
@@ -110,9 +110,9 @@ function CategorySection({
         )}
       </header>
 
-      <div className="rounded-[12px] overflow-hidden bg-surface-1/40 border border-hairline">
+      <div className="rounded-[20px] overflow-hidden bg-glass-1 backdrop-blur-xl border border-hairline shadow-lift">
         {items.length === 0 ? (
-          <div className="px-6 py-10 text-center">
+          <div className="px-6 py-12 text-center">
             <p className="text-[13px] text-ink-tertiary">
               이 카테고리에 보관된 자료가 아직 없어요.
             </p>

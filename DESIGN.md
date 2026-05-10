@@ -1,13 +1,13 @@
 ---
 version: alpha
 name: Linear
-description: "A near-black product-focused marketing canvas built around #010102 (the deepest dark surface of any tool in this collection), light gray text (#f7f8f8), and the signature Linear lavender-blue (#5e6ad2) used as the single chromatic accent. The system reads as software-craft documentation: dense, technical, and quietly luxurious. Display type is set in the Linear custom sans (SF Pro Display fallback) at 500–700 with measured negative tracking. Cards live as charcoal panels (#0f1011) with hairline borders. The accent lavender appears on the brand mark, focus rings, and a few intentional CTAs — never decoratively. Page rhythm leans on product UI screenshots framed in dark panels rather than atmospheric color."
+description: "A near-black product-focused marketing canvas built around #010102 (the deepest dark surface of any tool in this collection), light gray text (#f7f8f8), and a signature electric blue (#437EFF) used as the single chromatic accent. The system reads as software-craft documentation: dense, technical, and quietly luxurious. Display type is set in the Linear custom sans (SF Pro Display fallback) at 500–700 with measured negative tracking. Cards live as charcoal panels (#0f1011) with hairline borders. The accent blue appears on the brand mark, focus rings, and a few intentional CTAs — never decoratively. Page rhythm leans on product UI screenshots framed in dark panels rather than atmospheric color."
 
 colors:
-  primary: "#5e6ad2"
+  primary: "#437EFF"
   on-primary: "#ffffff"
-  primary-hover: "#828fff"
-  primary-focus: "#5e69d1"
+  primary-hover: "#6694FF"
+  primary-focus: "#3870E5"
   ink: "#f7f8f8"
   ink-muted: "#d0d6e0"
   ink-subtle: "#8a8f98"
@@ -24,7 +24,7 @@ colors:
   inverse-surface-1: "#f5f6f6"
   inverse-surface-2: "#f6f7f7"
   inverse-ink: "#000000"
-  brand-secure: "#7a7fad"
+  brand-secure: "#6c7fbb"
   semantic-success: "#27a644"
   semantic-overlay: "#000000"
 
@@ -259,7 +259,7 @@ components:
 
 Linear's marketing canvas is the deepest dark surface in this collection — `{colors.canvas}` is #010102, essentially pure black with a faint blue tint. On top sits a four-step surface ladder (`{colors.surface-1}` through `{colors.surface-4}`) for cards, panels, and lifted tiles, with hairline borders running from `{colors.hairline}` (#23252a) up through `{colors.hairline-strong}` and `{colors.hairline-tertiary}`. Light gray text (`{colors.ink}` #f7f8f8) carries the body and headlines.
 
-The single chromatic accent is **Linear lavender-blue** `{colors.primary}` (#5e6ad2) — used on the brand mark, focus rings, and the primary CTA button. A lighter hover state (`{colors.primary-hover}` #828fff) and a focus-tinted variant (`{colors.primary-focus}` #5e69d1) extend the same hue. Linear avoids saturated greens, oranges, reds, etc. on the marketing canvas — the only semantic color is `{colors.semantic-success}` (#27a644) for status pills and the rare success indicator.
+The single chromatic accent is **electric blue** `{colors.primary}` (#437EFF) — used on the brand mark, focus rings, and the primary CTA button. A lighter hover state (`{colors.primary-hover}` #6694FF) and a focus-tinted variant (`{colors.primary-focus}` #3870E5) extend the same hue. The system avoids saturated greens, oranges, reds, etc. on the marketing canvas — the only semantic color is `{colors.semantic-success}` (#27a644) for status pills and the rare success indicator.
 
 Display type runs Linear's custom sans (with `SF Pro Display` fallback) at weight 500–700 with negative letter-spacing scaling from -3.0px at 80px down to 0 at body. The body family is Linear's text cut, and a Linear Mono is reserved for code snippets in product screenshots.
 
@@ -267,7 +267,7 @@ The page rhythm is **dense product screenshots** — Linear's marketing leads wi
 
 **Key Characteristics:**
 - **Dark-canvas marketing system** — `{colors.canvas}` (#010102) is the deepest dark in this collection.
-- **Lavender-blue brand accent** (`{colors.primary}` #5e6ad2) — used scarcely on brand mark, focus, and the primary CTA.
+- **Electric blue brand accent** (`{colors.primary}` #437EFF) — used scarcely on brand mark, focus, and the primary CTA.
 - Four-step surface ladder (canvas → surface-1 → surface-2 → surface-3 → surface-4) carries hierarchy without shadow.
 - Display tracking pulls aggressively negative (-3.0px at 80px); body holds at -0.05px.
 - Cards use `{rounded.lg}` 12px corners with 1px hairline borders — never pill, rarely 16px.
@@ -279,10 +279,10 @@ The page rhythm is **dense product screenshots** — Linear's marketing leads wi
 > Source pages: linear.app (home), /intake, /pricing, /contact/sales, /build.
 
 ### Brand & Accent
-- **Lavender-Blue** ({colors.primary}): The signature Linear accent — primary CTA, brand mark, link emphasis.
-- **Lavender Hover** ({colors.primary-hover}): Lighter lavender (#828fff) — hovered state of the primary CTA.
-- **Lavender Focus** ({colors.primary-focus}): Focus-ring tint (#5e69d1) — focused inputs, focused buttons.
-- **Brand Secure** ({colors.brand-secure}): Muted lavender-gray (#7a7fad) — used in "Linear Security" surfaces.
+- **Electric Blue** ({colors.primary}): The signature accent — primary CTA, brand mark, link emphasis.
+- **Electric Blue Hover** ({colors.primary-hover}): Lighter blue (#6694FF) — hovered state of the primary CTA.
+- **Electric Blue Focus** ({colors.primary-focus}): Focus-ring tint (#3870E5) — focused inputs, focused buttons.
+- **Brand Secure** ({colors.brand-secure}): Muted blue-gray (#6c7fbb) — used in "security" surfaces.
 
 ### Surface
 - **Canvas** ({colors.canvas}): Default page background — #010102, near-pure black with a faint blue tint.
@@ -410,10 +410,10 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 
 ### Buttons
 
-**`button-primary`** — Lavender CTA. The default primary CTA across all pages.
+**`button-primary`** — Electric blue CTA. The default primary CTA across all pages.
 - Background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button}`, padding 8px 14px, rounded `{rounded.md}`.
 - Pressed state lives in `button-primary-pressed` (background shifts to `{colors.primary-focus}`).
-- Hover state lives in `button-primary-hover` (background shifts to `{colors.primary-hover}` lighter lavender).
+- Hover state lives in `button-primary-hover` (background shifts to `{colors.primary-hover}` lighter blue).
 
 **`button-secondary`** — Charcoal button. Used for secondary CTAs ("Sign in", "Read changelog").
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.button}`, padding 8px 14px, rounded `{rounded.md}`. 1px `{colors.hairline}` border.
@@ -482,7 +482,7 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 ### Do
 
 - Reserve `{colors.canvas}` (#010102) as the system's anchor surface — the faint blue tint is intentional.
-- Use `{colors.primary}` lavender ONLY for: brand mark, primary CTA, focus ring, link emphasis.
+- Use `{colors.primary}` electric blue ONLY for: brand mark, primary CTA, focus ring, link emphasis.
 - Use the four-step surface ladder for hierarchy. Avoid skipping levels.
 - Pair display weight 600 with body weight 400 — Linear resists 700+ display weights.
 - Apply negative letter-spacing aggressively on display.
@@ -492,7 +492,7 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 ### Don't
 
 - Don't ship a light-mode marketing page.
-- Don't use lavender as a section background or card fill.
+- Don't use electric blue as a section background or card fill.
 - Don't introduce a second chromatic accent (orange, pink, green for marketing).
 - Don't add atmospheric gradients or spotlight cards.
 - Don't pill-round CTAs.
@@ -536,7 +536,7 @@ Linear's depth is carried by surface ladder + hairline borders. The brand resist
 3. Default body to `{typography.body}` at weight 400.
 4. Run `npx @google/design.md lint DESIGN.md` after edits.
 5. Add new variants as separate component entries.
-6. Treat lavender as scarce: brand mark, primary CTA, focus, link emphasis.
+6. Treat electric blue as scarce: brand mark, primary CTA, focus, link emphasis.
 7. Lead every section with a product UI screenshot.
 
 ## Known Gaps

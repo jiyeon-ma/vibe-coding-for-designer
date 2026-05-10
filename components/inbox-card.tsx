@@ -126,7 +126,7 @@ export function InboxCard({
         body: JSON.stringify({ status: "UNREAD" }),
       });
       if (res.ok) {
-        toast.success("Vibe Fresh로 복귀했어요");
+        toast.success("New 탭으로 복귀했어요");
         onRemove?.(data.id);
         router.refresh();
       } else {
@@ -179,8 +179,8 @@ export function InboxCard({
         transition: { duration: duration.medium, ease: ease.out },
       }}
       transition={{ delay: index * 0.04, duration: duration.base, ease: ease.out }}
-      whileHover={{ y: -2 }}
-      className={`group relative overflow-hidden bg-surface-1 border border-hairline rounded-[12px] hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-200 ${
+      whileHover={{ y: -3 }}
+      className={`group relative overflow-hidden bg-surface-1 border border-hairline rounded-[20px] shadow-lift hover:bg-surface-2 hover:border-hairline-strong hover:shadow-lift-hover transition-[colors,box-shadow] duration-200 ${
         isPending ? "opacity-50 pointer-events-none" : ""
       }`}
     >
@@ -232,7 +232,7 @@ export function InboxCard({
                 className="text-ink hover:bg-surface-3 focus:bg-surface-3 cursor-pointer"
               >
                 <ArchiveRestore className="w-3.5 h-3.5 mr-2" />
-                Vibe Fresh로 복귀
+                New 탭으로 복귀
               </DropdownMenuItem>
             )}
             <DropdownMenuItem
@@ -269,12 +269,12 @@ export function InboxCard({
           </div>
         )}
 
-        <div className="p-6">
+        <div className="p-7">
           {/* Meta row */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Badge
               variant="secondary"
-              className={`bg-surface-2 ${categoryTextColor(currentSlug)} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-2.5 py-0.5`}
+              className={`bg-surface-2 ${categoryTextColor(currentSlug)} border-0 rounded-full text-[11px] tracking-[0.4px] font-medium px-3 py-1`}
             >
               {currentLabel}
             </Badge>
@@ -285,7 +285,7 @@ export function InboxCard({
           </div>
 
           {/* Title */}
-          <h3 className="text-[18px] font-semibold tracking-[-0.2px] text-ink leading-[1.35] mb-3 line-clamp-2">
+          <h3 className="text-[19px] font-semibold tracking-[-0.3px] text-ink leading-[1.3] mb-3 line-clamp-2">
             {data.title ?? data.url}
           </h3>
 

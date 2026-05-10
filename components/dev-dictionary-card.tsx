@@ -72,8 +72,8 @@ export function DevDictionaryCard({
           transition: { duration: duration.medium, ease: ease.out },
         }}
         transition={{ delay: index * 0.04, duration: duration.base, ease: ease.out }}
-        whileHover={{ y: -2 }}
-        className={`group relative bg-surface-1 border border-hairline rounded-[12px] p-7 hover:bg-surface-2 hover:border-hairline-strong transition-colors duration-200 ${
+        whileHover={{ y: -3 }}
+        className={`group relative bg-surface-1 border border-hairline rounded-[20px] shadow-lift p-8 hover:bg-surface-2 hover:border-hairline-strong hover:shadow-lift-hover transition-[colors,box-shadow] duration-200 ${
           isPending ? "opacity-50 pointer-events-none" : ""
         }`}
       >
@@ -109,19 +109,19 @@ export function DevDictionaryCard({
         </div>
 
         {/* Keyword */}
-        <h3 className="text-[24px] font-semibold tracking-[-0.4px] text-ink mb-2.5 pr-10 leading-[1.25]">
+        <h3 className="text-[32px] font-semibold tracking-[-0.8px] text-ink mb-3 pr-10 leading-[1.15]">
           {data.keyword}
         </h3>
 
         {/* Description */}
-        <p className="text-[15px] text-ink-muted leading-[1.6] mb-5">
+        <p className="text-[16px] text-ink-muted leading-[1.6] mb-6">
           {data.description}
         </p>
 
         {/* Example (mono code block) */}
         {data.example && (
           <div className="relative">
-            <pre className="bg-canvas border border-hairline rounded-lg p-4 pr-12 font-mono text-[13px] text-ink-muted leading-[1.6] overflow-x-auto whitespace-pre-wrap break-words">
+            <pre className="bg-canvas border border-hairline rounded-[14px] p-5 pr-12 font-mono text-[13px] text-ink-muted leading-[1.65] overflow-x-auto whitespace-pre-wrap break-words">
               {data.example}
             </pre>
             <button
