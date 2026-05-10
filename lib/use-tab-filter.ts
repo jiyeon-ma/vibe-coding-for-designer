@@ -102,12 +102,12 @@ export const TABS_META = {
   ],
   SUB: {
     dictionary: [
-      { id: "visual" as const, label: "Visual Dictionary" },
-      { id: "dev" as const, label: "Dev Dictionary" },
+      { id: "visual" as const, label: "Visual" },
+      { id: "dev" as const, label: "Dev" },
     ],
     reference: [
-      { id: "fresh" as const, label: "Vibe Fresh" },
-      { id: "archived" as const, label: "Vibe Archived" },
+      { id: "fresh" as const, label: "New" },
+      { id: "archived" as const, label: "Archived" },
     ],
   },
 } as const;
