@@ -118,33 +118,32 @@ function ExpandablePill({
         {label}
       </motion.button>
 
-      <AnimatePresence initial={false}>
+      <AnimatePresence initial={false} mode="popLayout">
         {active && (
           <motion.div
             key={mainId}
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "auto" }}
-            exit={{ opacity: 0, width: 0 }}
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: duration.medium, ease: ease.out }}
-            className="overflow-hidden"
+            className="flex items-center gap-5 pl-3 pr-5 whitespace-nowrap"
           >
-            <div className="flex items-center gap-5 pl-3 pr-5 whitespace-nowrap">
-              {subs.map((s) => {
-                const isActive = activeSub === s.id;
-                return (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => onSubClick(s.id)}
-                    className={`text-[15px] font-medium tracking-[-0.1px] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 rounded-sm ${
-                      isActive ? "text-brand" : "text-zinc-500 hover:text-zinc-700"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
+            {subs.map((s) => {
+              const isActive = activeSub === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => onSubClick(s.id)}
+                  className={`text-[15px] font-medium tracking-[-0.1px] transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-brand-focus/50 rounded-sm ${
+                    isActive ? "text-brand" : "text-zinc-500 hover:text-zinc-700"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
