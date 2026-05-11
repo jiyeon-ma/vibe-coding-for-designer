@@ -10,6 +10,13 @@ import { VisualDictionaryCard } from "@/components/visual-dictionary-card";
 import { SearchBar } from "@/components/search-bar";
 import { CategoryOverview } from "@/components/category-overview";
 import { MOCK_VISUAL_DICTIONARY } from "@/lib/mock-visual-dictionary";
+import { TabFilterProvider } from "@/lib/use-tab-filter";
+import {
+  parseTop,
+  parseSub,
+  type TopTab,
+  type SubTab,
+} from "@/lib/tab-filter-shared";
 import type { InboxCardData, CategoryOption } from "@/components/inbox-card";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +47,19 @@ function toCardData(ref: {
   };
 }
 
-export default async function Home() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  const tabParam = typeof sp.tab === "string" ? sp.tab : null;
+  const subParam = typeof sp.sub === "string" ? sp.sub : null;
+  const initialTop: TopTab = parseTop(tabParam);
+  const initialSub: SubTab | null = parseSub(subParam, initialTop);
+
   const include = {
     category: true,
     tags: { include: { tag: true } },
@@ -71,7 +90,8 @@ export default async function Home() {
   }));
 
   return (
-    <main className="min-h-screen px-6 md:px-12 max-w-7xl mx-auto">
+    <TabFilterProvider initialTop={initialTop} initialSub={initialSub}>
+      <main className="min-h-screen px-6 md:px-12 max-w-7xl mx-auto">
       {/* Hero */}
       <section className="pt-20 md:pt-36 pb-16 md:pb-24 text-center">
         <p className="text-[12px] font-medium tracking-[0.6px] text-ink-subtle mb-6 uppercase">
@@ -177,7 +197,8 @@ export default async function Home() {
           </Section>
         </FilteredSection>
       </Suspense>
-    </main>
+      </main>
+    </TabFilterProvider>
   );
 }
 
